@@ -1,9 +1,11 @@
 # 中南大学课程共享计划 😉
 
-中南大学课程共享计划——CSU_Courses
+中南大学课程共享计划——CSU-Courses，欢迎大家贡献！
+正是大家的关注、维护和贡献，才使这个项目得以持续完善、不断更新，帮助更多同学更高效地学习与备考~
 
-欢迎大家贡献！请留下感谢署名id~
 
+### 感谢以下贡献者：
+[![Contributors](https://contrib.rocks/image?repo=Jinyong-Li/CSU-Courses)](https://github.com/Jinyong-Li/CSU-Courses/graphs/contributors)
 
 ## 如何为本项目贡献
 
