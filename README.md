@@ -4,8 +4,7 @@
 正是大家的关注、维护和贡献，才使这个项目得以持续完善、不断更新，帮助更多同学更高效地学习与备考~
 
 
-### 感谢以下贡献者：
-[![Contributors](https://contrib.rocks/image?repo=Jinyong-Li/CSU-Courses)](https://github.com/Jinyong-Li/CSU-Courses/graphs/contributors)
+
 
 ## 如何为本项目贡献
 
@@ -58,6 +57,7 @@
 
 感谢以下同学为本仓库贡献材料:
 
+[![Contributors](https://contrib.rocks/image?repo=Jinyong-Li/CSU-Courses)](https://github.com/Jinyong-Li/CSU-Courses/graphs/contributors)
 
 本项目参考了[浙江大学课程攻略共享计划](https://github.com/QSCTech/zju-icicles) ，[北京航空航天大学(北航)课程作业资料共享平台](https://github.com/TheBloodthirster/BUAA_Course_Sharing) ，在此表示感谢！
 
