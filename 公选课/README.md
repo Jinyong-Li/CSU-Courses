@@ -2,7 +2,7 @@
 > [!IMPORTANT]
 > ### 公选课攻略请只在 HackMD 编辑（仓库内容会自动同步）
 >
-> 本项目将公选课攻略内容以 **HackMD** 为唯一来源（Single Source of Truth），并通过自动同步流程定期/在更新时同步到仓库。
+> 本项目将公选课攻略内容以 **HackMD** 为唯一来源，并通过自动同步流程定期在更新时同步到仓库。
 >
 > **因此请不要在 GitHub 仓库（包括 PR）直接修改该表格/对应文件**，原因是：
 > 1. **避免冲突**：多人同时在两处编辑会产生内容不一致、难以合并。
@@ -14,12 +14,12 @@
 > - 编辑：https://hackmd.io/@iljy/csugxk/edit
 
 > [!Note]
->  贡献者列推荐填写：  
+>  贡献者列推荐按以下格式填写，请使用GitHub用户名替代GitHubID：  
 > 法一：`[@GitHubID](https://github.com/GitHubID)`  
-> 效果：[@Jinyong-Li](https://github.com/Jinyong-Li)
+> 效果示例：[@Jinyong-Li](https://github.com/Jinyong-Li)
 > 
 > 法二：`[![GitHubID](https://github.com/GitHubID.png?size=24)](https://github.com/GitHubID) [@GitHubID](https://github.com/GitHubID)`
-> 效果：[![Jinyong-Li](https://github.com/Jinyong-Li.png?size=24)](https://github.com/Jinyong-Li) 
+> 效果示例：[![Jinyong-Li](https://github.com/Jinyong-Li.png?size=24)](https://github.com/Jinyong-Li) 
 > 
 | 类型 | 公选课名称 | 课程评价 | 推荐程度 | 分数 | 贡献者 |
 | --- | --- | --- | --- | --- | --- |
