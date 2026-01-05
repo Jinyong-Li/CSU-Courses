@@ -1,4 +1,3 @@
-url=https://github.com/Jinyong-Li/CSU-Courses/blob/main/.github/workflows/sync-hackmd-csugxk.yml
 name: sync hackmmd csugxk
 
 on:
