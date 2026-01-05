@@ -1,6 +1,26 @@
-## CSU课程共享计划链接：https://github.com/Jinyong-Li/CSU-Courses
-## CSU公选课攻略链接：https://hackmd.io/@iljy/csugxk
-## 请直接在本链接编辑：https://hackmd.io/@iljy/csugxk/edit
+## CSU课程共享计划仓库：https://github.com/Jinyong-Li/CSU-Courses
+> [!IMPORTANT]
+> ### 公选课攻略请只在 HackMD 编辑（仓库内容会自动同步）
+>
+> 本项目将公选课攻略内容以 **HackMD** 为唯一来源（Single Source of Truth），并通过自动同步流程定期/在更新时同步到仓库。
+>
+> **因此请不要在 GitHub 仓库（包括 PR）直接修改该表格/对应文件**，原因是：
+> 1. **避免冲突**：多人同时在两处编辑会产生内容不一致、难以合并。
+> 2. **避免被覆盖**：仓库中的对应文件属于同步产物，手动改动可能在下次同步时被自动覆盖。
+> 3. **便于协作**：HackMD 更适合多人快速编辑、评论与版本记录。
+>
+> 请在 HackMD 编辑并保存：
+> - 阅读：https://hackmd.io/@iljy/csugxk
+> - 编辑：https://hackmd.io/@iljy/csugxk/edit
+
+> [!Note]
+>  贡献者列推荐填写：  
+> 法一：`[@GitHubID](https://github.com/GitHubID)`  
+> 效果：[@Jinyong-Li](https://github.com/Jinyong-Li)
+> 
+> 法二：`[![GitHubID](https://github.com/GitHubID.png?size=24)](https://github.com/GitHubID) [@GitHubID](https://github.com/GitHubID)`
+> 效果：[![Jinyong-Li](https://github.com/Jinyong-Li.png?size=24)](https://github.com/Jinyong-Li) 
+> 
 | 类型 | 公选课名称 | 课程评价 | 推荐程度 | 分数 | 贡献者 |
 | --- | --- | --- | --- | --- | --- |
 | 1 | 传统文化与管理智慧 | 一个学期两次签到(在纸上轮流签名) ，课上不点人回答问题<br>期末交一份课程感悟，无字数要求，无期末考试<br>课程感悟写与老师上课相关的分就不会低，可以90+(听说就算不相关保底也有85） |  | 95 |
