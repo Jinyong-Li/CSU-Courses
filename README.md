@@ -25,15 +25,24 @@
    （输入 `课程名/` 后会自动形成目录；最后以 `README.md` 结尾）
 3. 在下方填写课程介绍、注意事项、心得体会等
 4. 点击 **Commit changes**，并选择 **Create a new branch for this commit and start a pull request**
+5. 点击 **Propose changes**
 
 #### 3. 上传资料文件
 1. 进入目标目录（已有目录或你刚创建的目录）
 2. 点击 **Add file → Upload files**
 3. 选择文件或直接拖拽到浏览器上传
 4. 页面底部选择：**Create a new branch for this commit and start a pull request**
-5. 提交后按提示创建 PR
+5. 点击 **Propose changes**
 
-> 注意：不要把文件只上传到 PR 的描述/评论里。
+#### 4.提交PR
+在打开的 PR 页面确认信息无误后，点击 **Create pull request**
+> [!IMPORTANT]
+> 如果页面显示的 base repository 不是 `Jinyong-Li/CSU-Courses`，请点击页面上方小蓝字 **compare across forks**，然后手动选择base repository为`Jinyong-Li/CSU-Courses`
+>   - **base repository（目标仓库）应为：`Jinyong-Li/CSU-Courses`**
+>  - base branch：`main`
+>   - head repository：你的 fork（例如 `yourname/CSU-Courses`）
+>   - compare：本次自动创建的分支（例如 `yourname-patch-1`）
+
 
 #### 上传限制（GitHub 常见限制）
 - 单个文件建议不超过 **25MB**（超过可能无法通过网页上传/或会被限制）
