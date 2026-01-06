@@ -5,6 +5,15 @@ on:
     # Daily at 03:00 Beijing Time (UTC+8) == 19:00 UTC (previous day)
     - cron: "0 19 * * *"
   workflow_dispatch:
+    inputs:
+      force:
+        description: "Force regenerate SVG even if contributors fingerprint is unchanged"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
 
 permissions:
   contents: write
@@ -64,16 +73,27 @@ jobs:
           fi
           echo "OLD_FP=$OLD_FP" >> "$GITHUB_ENV"
 
+          # Default: changed only if fingerprint differs (or fingerprint missing)
           if [[ -z "$OLD_FP" ]]; then
             echo "No existing fingerprint; initializing."
-            echo "CHANGED=true" >> "$GITHUB_ENV"
+            CHANGED="true"
           elif [[ "$NEW_FP" == "$OLD_FP" ]]; then
             echo "Fingerprint unchanged."
-            echo "CHANGED=false" >> "$GITHUB_ENV"
+            CHANGED="false"
           else
             echo "Fingerprint changed."
-            echo "CHANGED=true" >> "$GITHUB_ENV"
+            CHANGED="true"
           fi
+
+          # Allow manual force override (workflow_dispatch only)
+          FORCE_INPUT="${{ github.event.inputs.force || 'false' }}"
+          echo "FORCE_INPUT=$FORCE_INPUT" >> "$GITHUB_ENV"
+          if [[ "$FORCE_INPUT" == "true" ]]; then
+            echo "Force enabled; will regenerate."
+            CHANGED="true"
+          fi
+
+          echo "CHANGED=$CHANGED" >> "$GITHUB_ENV"
 
       - name: Generate assets/contributors.svg (only if changed)
         if: env.CHANGED == 'true'
@@ -86,10 +106,8 @@ jobs:
 
           mkdir -p assets .github
 
-          # Update fingerprint file
           echo -n "${NEW_FP}" > ".github/contributors-login.fingerprint"
 
-          # Generate SVG from logins list
           node scripts/generate-contributors-svg.mjs \
             --repo "${OWNER}/${REPO}" \
             --input ".github/contributors-logins.txt" \
@@ -99,7 +117,7 @@ jobs:
             --padding 6
 
           echo "Diff:"
-          git diff -- assets/contributors.svg .github/contributors-login.fingerprint || true
+          git diff -- assets/contributors.svg .github/contributors-login.fingerprint .github/contributors-logins.txt || true
 
       - name: Create or update pull request (only if changed)
         if: env.CHANGED == 'true'
@@ -114,7 +132,7 @@ jobs:
             This PR updates `assets/contributors.svg` generated from GitHub contributors API
             so the README contributors image always matches GitHub.
 
-            Trigger: contributors login list changed (or initialization).
+            Trigger: contributors login list changed, initialization, or manual force=true.
           add-paths: |
             assets/contributors.svg
             .github/contributors-login.fingerprint
