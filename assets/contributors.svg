@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="834"
+  height="64"
+  viewBox="0 0 834 64"
+>
+  <title>Contributors of Jinyong-Li/CSU-Courses</title>
+  
+  <a xlink:href="https://github.com/Jinyong-Li" target="_blank" rel="noopener noreferrer">
+    <defs>
+      <clipPath id="clip-0">
+        <rect x="0" y="0" width="64" height="64" rx="10" ry="10" />
+      </clipPath>
+    </defs>
+    <image
+      x="0" y="0"
+      width="64" height="64"
+      href="https://github.com/Jinyong-Li.png?size=64"
+      preserveAspectRatio="xMidYMid slice"
+      clip-path="url(#clip-0)"
+    />
+  </a>
+
+  <a xlink:href="https://github.com/github-actions%5Bbot%5D" target="_blank" rel="noopener noreferrer">
+    <defs>
+      <clipPath id="clip-1">
+        <rect x="70" y="0" width="64" height="64" rx="10" ry="10" />
+      </clipPath>
+    </defs>
+    <image
+      x="70" y="0"
+      width="64" height="64"
+      href="https://github.com/github-actions%5Bbot%5D.png?size=64"
+      preserveAspectRatio="xMidYMid slice"
+      clip-path="url(#clip-1)"
+    />
+  </a>
+
+  <a xlink:href="https://github.com/yrz-bot" target="_blank" rel="noopener noreferrer">
+    <defs>
+      <clipPath id="clip-2">
+        <rect x="140" y="0" width="64" height="64" rx="10" ry="10" />
+      </clipPath>
+    </defs>
+    <image
+      x="140" y="0"
+      width="64" height="64"
+      href="https://github.com/yrz-bot.png?size=64"
+      preserveAspectRatio="xMidYMid slice"
+      clip-path="url(#clip-2)"
+    />
+  </a>
+</svg>
