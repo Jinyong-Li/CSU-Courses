@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   refresh:
@@ -65,7 +66,11 @@ jobs:
 
           echo "OLD_FP=$OLD_FP" >> "$GITHUB_ENV"
 
-          if [[ "$NEW_FP" == "$OLD_FP" ]]; then
+          # Treat missing fingerprint file as "changed" so the workflow can initialize it.
+          if [[ -z "$OLD_FP" ]]; then
+            echo "No existing fingerprint file; initializing."
+            echo "CHANGED=true" >> "$GITHUB_ENV"
+          elif [[ "$NEW_FP" == "$OLD_FP" ]]; then
             echo "Fingerprint unchanged."
             echo "CHANGED=false" >> "$GITHUB_ENV"
           else
@@ -107,20 +112,20 @@ jobs:
           echo "Diff:"
           git diff -- "$FILE" "$FP_FILE" || true
 
-      - name: Commit and push (only if changed)
+      - name: Create or update pull request (only if changed)
         if: env.CHANGED == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: bot/refresh-contrib-rocks
+          delete-branch: true
+          title: "chore: refresh contrib.rocks cache"
+          commit-message: "chore: refresh contrib.rocks cache (contributors changed)"
+          body: |
+            This PR refreshes the contrib.rocks image URL cache-busting parameter and updates the stored contributors fingerprint.
 
-          if git diff --quiet; then
-            echo "No file changes detected; skipping commit."
-            exit 0
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add README.md .github/contributors-login.fingerprint
-          git commit -m "chore: refresh contrib.rocks cache (contributors changed)"
-          git push
+            - Trigger: contributors login list changed (or fingerprint initialization)
+            - Updated file(s): README.md, .github/contributors-login.fingerprint
+          add-paths: |
+            README.md
+            .github/contributors-login.fingerprint
