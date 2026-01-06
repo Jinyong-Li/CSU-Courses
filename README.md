@@ -108,7 +108,7 @@
 
 ## 致谢
 
-感谢以下同学的贡献:
+感谢以下项目贡献者:
 [![Contributors](assets/contributors.svg)](https://github.com/Jinyong-Li/CSU-Courses/graphs/contributors)
 
 
