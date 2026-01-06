@@ -65,8 +65,15 @@ if (!repo || !input || !output) {
 const contributors = JSON.parse(fs.readFileSync(input, "utf8"))
   .filter((c) => c && c.login && c.avatar_url && c.html_url);
 
-// Stable order: sort by login
-contributors.sort((a, b) => String(a.login).localeCompare(String(b.login)));
+// Keep GitHub API order (usually by contributions desc), but move bots to the end (stable).
+const humans = [];
+const bots = [];
+for (const c of contributors) {
+  if (String(c.login).endsWith("[bot]")) bots.push(c);
+  else humans.push(c);
+}
+contributors.length = 0;
+contributors.push(...humans, ...bots);
 
 const rows = Math.max(1, Math.ceil(contributors.length / columns));
 const width = columns * size + (columns - 1) * padding;
