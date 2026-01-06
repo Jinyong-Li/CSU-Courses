@@ -43,6 +43,12 @@
 >   - head repository：你的 fork（例如 `yourname/CSU-Courses`）
 >   - compare：本次自动创建的分支（例如 `yourname-patch-1`）
 
+> [!TIP]
+> 已经开了 PR 但还想继续补充资料（推荐追加到同一个 PR）：
+> 1. 回到你自己的 fork 仓库，切换到你之前开 PR 的分支（例如 `patch-1` ）。
+> 2. 在该分支下继续 **Add file → Create new file/Upload files** 新建文件或上传。
+> 3. 提交时选择：**Commit directly to the `patch-1` branch**（而不要再选 *Create a new branch for this commit and start a pull request*）。
+> 4. 回到 PR 页面，你的新提交会自动出现在同一个 PR 中。
 
 #### 上传限制（GitHub 常见限制）
 - 单个文件建议不超过 **25MB**（超过可能无法通过网页上传/或会被限制）
