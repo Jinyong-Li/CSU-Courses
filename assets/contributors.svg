@@ -17,25 +17,15 @@
     <image
       x="0" y="0"
       width="64" height="64"
-      href="https://github.com/Jinyong-Li.png?size=64"
+      href="data:image/png;base64,/9j/2wCEAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDIBCQkJDAsMGA0NGDIhHCEyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMv/AABEIAEAAQAMBIgACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+gEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/APUaXOKQ8UleieOLmikOFUsxwB3NUrrUohaTNbyqZFHA/rWdStCmveY0mzQFFc/ZarMvDnfu6bjW+jeZErkYJHSsMPjIVnyrRlOLtcXNOBptKAS2O9dTEhGHNKEqbyiW4pwiqecvkM7UeLGX5SeO1cmsM08+2KNmxzgelegO9vF8hKlu+4ZFRKjMhW2igVSwJ8sAZwc1wYnDyrS5r2HyrY4+1QJdFljGB2POK6q3YzW4Zlx24FJb6Ltn3sNq5ztArbTYFCFVCj+ECufC0qtGbb2No000ZAjP41IihenX1q1PEocGPoRkCoShDY/lXp8/MiOTlZbMagcUm3I6cVNspxACH6Vzc518lzH8jfM7EcZqRYVUGpbi3M0TxAsodSCyHBGR1B7GqM0MvlCFbpo1UptcDLnBGQSeuceneuhTctjllSUdy/FKURk3E+9SIcA+lUVkBZ8dsc1Ztz5yfL64olFJXCMm3yk6r5iqc8ClEYz0p0C/u8e5/nUwSuaU7Ox1xhdJmbLeuBwaoy3czHBc4+tWfJ3dATUZsWOTgCumKpx3OebqS2JotXTyfLmQ5xjeveonktrgYS4Ct6Hj+dNGmySDhcCp4tFXOZCPwFHPShqmLkqz0kiK1tSIpvOdU3YCnPGKuQRAIFiVmH988CrENhbw4wgJHc1MeOAKwqV3LY3p4dRGou1cCpAPU0zt0pcnPSuc6D//2Q=="
       preserveAspectRatio="xMidYMid slice"
       clip-path="url(#clip-0)"
     />
   </a>
 
   <a xlink:href="https://github.com/github-actions%5Bbot%5D" target="_blank" rel="noopener noreferrer">
-    <defs>
-      <clipPath id="clip-1">
-        <rect x="70" y="0" width="64" height="64" rx="10" ry="10" />
-      </clipPath>
-    </defs>
-    <image
-      x="70" y="0"
-      width="64" height="64"
-      href="https://github.com/github-actions%5Bbot%5D.png?size=64"
-      preserveAspectRatio="xMidYMid slice"
-      clip-path="url(#clip-1)"
-    />
+    <rect x="70" y="0" width="64" height="64" rx="10" ry="10" fill="#ddd" />
+    <text x="76" y="32" font-size="10" fill="#555">github-actions[bot]</text>
   </a>
 
   <a xlink:href="https://github.com/yrz-bot" target="_blank" rel="noopener noreferrer">
@@ -47,7 +37,7 @@
     <image
       x="140" y="0"
       width="64" height="64"
-      href="https://github.com/yrz-bot.png?size=64"
+      href="data:image/png;base64,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"
       preserveAspectRatio="xMidYMid slice"
       clip-path="url(#clip-2)"
     />
