@@ -37,15 +37,15 @@
 3. 文件名输入：`课程名/README.md`  
    （输入 `课程名/` 会自动形成目录；以 `README.md` 结尾）
 4. 填写 README 内容
-5. 点击 **Commit changes**
-6. 提交选项选择：**Commit directly to the `<你的分支名>` branch**（重要）
+5. 提交选项选择：**Commit directly to the `<你的分支名>` branch**（重要）
+6. 点击 **Commit changes**
 
 #### 4. 上传资料文件（追加到同一分支）
 1. 进入目标课程目录
 2. 点击 **Add file → Upload files**
 3. 选择文件或拖拽上传
-4. 点击 **Commit changes**
-5. 提交选项选择：**Commit directly to the `<你的分支名>` branch**（重要）
+4. 提交选项选择：**Commit directly to the `<你的分支名>` branch**（重要）
+5. 点击 **Commit changes**
 
 > 可以重复上传多次；只要 PR 仍是 Open，就一直提交到该 PR 对应分支即可。
 
