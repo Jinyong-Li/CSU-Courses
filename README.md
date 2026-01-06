@@ -110,7 +110,7 @@
 
 感谢以下同学的贡献:
 
-[![Contributors](https://contrib.rocks/image?repo=Jinyong-Li/CSU-Courses)](https://github.com/Jinyong-Li/CSU-Courses/graphs/contributors)
+[![Contributors](https://contrib.rocks/image?repo=Jinyong-Li/CSU-Courses&cache=2026-01-06)](https://github.com/Jinyong-Li/CSU-Courses/graphs/contributors)
 
 本项目参考了[浙江大学课程攻略共享计划](https://github.com/QSCTech/zju-icicles) ，[北京航空航天大学(北航)课程作业资料共享平台](https://github.com/TheBloodthirster/BUAA_Course_Sharing) ，在此表示感谢！
 
