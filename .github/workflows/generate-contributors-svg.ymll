@@ -1,0 +1,121 @@
+name: Generate contributors SVG (always in sync with GitHub)
+
+on:
+  schedule:
+    # Daily at 03:00 Beijing Time (UTC+8) == 19:00 UTC (previous day)
+    - cron: "0 19 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Fetch contributors logins (GitHub API) and compute fingerprint
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: Jinyong-Li
+          REPO: CSU-Courses
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p .github
+          FP_FILE=".github/contributors-login.fingerprint"
+          LOGINS_FILE=".github/contributors-logins.txt"
+
+          tmp="$(mktemp)"
+          page=1
+          > "$tmp"
+
+          while :; do
+            url="https://api.github.com/repos/${OWNER}/${REPO}/contributors?per_page=100&page=${page}"
+            resp="$(curl -sS -H "Authorization: Bearer ${GH_TOKEN}" -H "X-GitHub-Api-Version: 2022-11-28" "$url")"
+            count="$(echo "$resp" | jq 'length')"
+            if [[ "$count" -eq 0 ]]; then
+              break
+            fi
+            echo "$resp" >> "$tmp"
+            page=$((page + 1))
+          done
+
+          cat "$tmp" | jq -r '.[].login' | sort -u > "$LOGINS_FILE"
+          echo "Contributors (logins):"
+          cat "$LOGINS_FILE"
+
+          NEW_FP="$(sha256sum "$LOGINS_FILE" | awk '{print $1}')"
+          echo "NEW_FP=$NEW_FP" >> "$GITHUB_ENV"
+
+          if [[ -f "$FP_FILE" ]]; then
+            OLD_FP="$(cat "$FP_FILE" | tr -d '\n' || true)"
+          else
+            OLD_FP=""
+          fi
+          echo "OLD_FP=$OLD_FP" >> "$GITHUB_ENV"
+
+          if [[ -z "$OLD_FP" ]]; then
+            echo "No existing fingerprint; initializing."
+            echo "CHANGED=true" >> "$GITHUB_ENV"
+          elif [[ "$NEW_FP" == "$OLD_FP" ]]; then
+            echo "Fingerprint unchanged."
+            echo "CHANGED=false" >> "$GITHUB_ENV"
+          else
+            echo "Fingerprint changed."
+            echo "CHANGED=true" >> "$GITHUB_ENV"
+          fi
+
+      - name: Generate assets/contributors.svg (only if changed)
+        if: env.CHANGED == 'true'
+        env:
+          OWNER: Jinyong-Li
+          REPO: CSU-Courses
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p assets .github
+
+          # Update fingerprint file
+          echo -n "${NEW_FP}" > ".github/contributors-login.fingerprint"
+
+          # Generate SVG from logins list
+          node scripts/generate-contributors-svg.mjs \
+            --repo "${OWNER}/${REPO}" \
+            --input ".github/contributors-logins.txt" \
+            --output "assets/contributors.svg" \
+            --columns 12 \
+            --size 64 \
+            --padding 6
+
+          echo "Diff:"
+          git diff -- assets/contributors.svg .github/contributors-login.fingerprint || true
+
+      - name: Create or update pull request (only if changed)
+        if: env.CHANGED == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: bot/generate-contributors-svg
+          delete-branch: true
+          title: "chore: update contributors SVG"
+          commit-message: "chore: update contributors SVG"
+          body: |
+            This PR updates `assets/contributors.svg` generated from GitHub contributors API
+            so the README contributors image always matches GitHub.
+
+            Trigger: contributors login list changed (or initialization).
+          add-paths: |
+            assets/contributors.svg
+            .github/contributors-login.fingerprint
+            .github/contributors-logins.txt
