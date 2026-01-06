@@ -31,7 +31,7 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Fetch contributors logins (GitHub API) and compute fingerprint
+      - name: Fetch contributors (GitHub API) and compute fingerprint
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: Jinyong-Li
@@ -43,6 +43,7 @@ jobs:
           mkdir -p .github
           FP_FILE=".github/contributors-login.fingerprint"
           LOGINS_FILE=".github/contributors-logins.txt"
+          JSON_FILE=".github/contributors.json"
 
           tmp="$(mktemp)"
           page=1
@@ -50,6 +51,7 @@ jobs:
 
           while :; do
             url="https://api.github.com/repos/${OWNER}/${REPO}/contributors?per_page=100&page=${page}"
+            echo "Fetching: $url"
             resp="$(curl -sS -H "Authorization: Bearer ${GH_TOKEN}" -H "X-GitHub-Api-Version: 2022-11-28" "$url")"
             count="$(echo "$resp" | jq 'length')"
             if [[ "$count" -eq 0 ]]; then
@@ -59,7 +61,11 @@ jobs:
             page=$((page + 1))
           done
 
-          cat "$tmp" | jq -r '.[].login' | sort -u > "$LOGINS_FILE"
+          # Merge pages -> one JSON array
+          cat "$tmp" | jq -s 'add' > "$JSON_FILE"
+
+          # Stable logins list for fingerprinting
+          jq -r '.[].login' "$JSON_FILE" | sort -u > "$LOGINS_FILE"
           echo "Contributors (logins):"
           cat "$LOGINS_FILE"
 
@@ -73,7 +79,7 @@ jobs:
           fi
           echo "OLD_FP=$OLD_FP" >> "$GITHUB_ENV"
 
-          # Default: changed only if fingerprint differs (or fingerprint missing)
+          # Default: changed only if fingerprint differs (or missing)
           if [[ -z "$OLD_FP" ]]; then
             echo "No existing fingerprint; initializing."
             CHANGED="true"
@@ -85,7 +91,7 @@ jobs:
             CHANGED="true"
           fi
 
-          # Allow manual force override (workflow_dispatch only)
+          # Manual force override (workflow_dispatch)
           FORCE_INPUT="${{ github.event.inputs.force || 'false' }}"
           echo "FORCE_INPUT=$FORCE_INPUT" >> "$GITHUB_ENV"
           if [[ "$FORCE_INPUT" == "true" ]]; then
@@ -106,18 +112,19 @@ jobs:
 
           mkdir -p assets .github
 
+          # Update fingerprint file
           echo -n "${NEW_FP}" > ".github/contributors-login.fingerprint"
 
           node scripts/generate-contributors-svg.mjs \
             --repo "${OWNER}/${REPO}" \
-            --input ".github/contributors-logins.txt" \
+            --input ".github/contributors.json" \
             --output "assets/contributors.svg" \
             --columns 12 \
             --size 64 \
             --padding 6
 
           echo "Diff:"
-          git diff -- assets/contributors.svg .github/contributors-login.fingerprint .github/contributors-logins.txt || true
+          git diff -- assets/contributors.svg .github/contributors-login.fingerprint .github/contributors-logins.txt .github/contributors.json || true
 
       - name: Create or update pull request (only if changed)
         if: env.CHANGED == 'true'
@@ -137,3 +144,4 @@ jobs:
             assets/contributors.svg
             .github/contributors-login.fingerprint
             .github/contributors-logins.txt
+            .github/contributors.json
