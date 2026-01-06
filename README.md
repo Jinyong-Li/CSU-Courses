@@ -55,7 +55,7 @@
 
 ## 致谢
 
-感谢以下同学为本仓库贡献材料:
+感谢以下同学的贡献:
 
 [![Contributors](https://contrib.rocks/image?repo=Jinyong-Li/CSU-Courses)](https://github.com/Jinyong-Li/CSU-Courses/graphs/contributors)
 
