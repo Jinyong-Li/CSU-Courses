@@ -1,18 +1,126 @@
-name: Warm up contributors image
+name: Refresh contrib.rocks image when contributor list changes
 
 on:
   schedule:
-    # 北京时间 03:00（UTC+8）=> UTC 19:00
+    # Daily at 03:00 Beijing Time (UTC+8) == 19:00 UTC (previous day)
     - cron: "0 19 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  warmup:
+  refresh:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch contrib.rocks image (warm cache)
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compute contributors login fingerprint (via GitHub API)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: Jinyong-Li
+          REPO: CSU-Courses
+        shell: bash
         run: |
-          set -e
-          URL="https://contrib.rocks/image?repo=Jinyong-Li/CSU-Courses"
-          echo "Fetching: $URL"
-          curl -L --fail --retry 3 --retry-delay 2 "$URL" -o /dev/null
+          set -euo pipefail
+
+          FP_FILE=".github/contributors-login.fingerprint"
+          TMP_JSON="$(mktemp)"
+          TMP_LOGINS="$(mktemp)"
+
+          page=1
+          > "$TMP_JSON"
+
+          while :; do
+            url="https://api.github.com/repos/${OWNER}/${REPO}/contributors?per_page=100&page=${page}"
+            echo "Fetching: $url"
+
+            resp="$(curl -sS -H "Authorization: Bearer ${GH_TOKEN}" -H "X-GitHub-Api-Version: 2022-11-28" "$url")"
+            count="$(echo "$resp" | jq 'length')"
+
+            if [[ "$count" -eq 0 ]]; then
+              break
+            fi
+
+            echo "$resp" >> "$TMP_JSON"
+            page=$((page + 1))
+          done
+
+          cat "$TMP_JSON" \
+            | jq -r '.[].login' \
+            | sort -u > "$TMP_LOGINS"
+
+          echo "Contributors (logins):"
+          cat "$TMP_LOGINS"
+
+          NEW_FP="$(sha256sum "$TMP_LOGINS" | awk '{print $1}')"
+          echo "NEW_FP=$NEW_FP" >> "$GITHUB_ENV"
+
+          if [[ -f "$FP_FILE" ]]; then
+            OLD_FP="$(cat "$FP_FILE" | tr -d '\n' || true)"
+          else
+            OLD_FP=""
+          fi
+
+          echo "OLD_FP=$OLD_FP" >> "$GITHUB_ENV"
+
+          if [[ "$NEW_FP" == "$OLD_FP" ]]; then
+            echo "Fingerprint unchanged."
+            echo "CHANGED=false" >> "$GITHUB_ENV"
+          else
+            echo "Fingerprint changed."
+            echo "CHANGED=true" >> "$GITHUB_ENV"
+          fi
+
+      - name: Update README cache param and fingerprint (only if changed)
+        if: env.CHANGED == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          FILE="README.md"
+          FP_FILE=".github/contributors-login.fingerprint"
+          NEW_CACHE="$(date -u +%F)"   # e.g. 2026-01-06
+
+          mkdir -p .github
+          echo -n "${NEW_FP}" > "$FP_FILE"
+
+          # Update/add cache param for the specific contrib.rocks image URL.
+          #
+          # Cases handled:
+          # 1) ...image?repo=Jinyong-Li/CSU-Courses&cache=OLD  -> replace OLD
+          # 2) ...image?repo=Jinyong-Li/CSU-Courses           -> append &cache=NEW
+          #
+          # We keep the match bounded by whitespace / ')' to avoid eating Markdown syntax.
+          perl -0777 -i -pe '
+            my $repo = "Jinyong-Li/CSU-Courses";
+            my $cache = "'"$NEW_CACHE"'";
+
+            # Replace existing cache=...
+            s#(https://contrib\.rocks/image\?repo=\Q$repo\E[^)\s]*?&cache=)[^&)\s]+#${1}$cache#g;
+
+            # If there is no cache= in that URL, append it (but only for that repo URL)
+            s#(https://contrib\.rocks/image\?repo=\Q$repo\E)(?![^)\s]*&cache=)([^)\s]*)#${1}${2}&cache=$cache#g;
+          ' "$FILE"
+
+          echo "Diff:"
+          git diff -- "$FILE" "$FP_FILE" || true
+
+      - name: Commit and push (only if changed)
+        if: env.CHANGED == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet; then
+            echo "No file changes detected; skipping commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add README.md .github/contributors-login.fingerprint
+          git commit -m "chore: refresh contrib.rocks cache (contributors changed)"
+          git push
