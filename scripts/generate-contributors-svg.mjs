@@ -24,6 +24,26 @@ function escAttr(s) {
     .replace(/>/g, "&gt;");
 }
 
+async function fetchAvatarDataUrl(login, size) {
+  const url = `https://github.com/${encodeURIComponent(login)}.png?size=${size}`;
+  const res = await fetch(url, {
+    headers: {
+      // A UA helps avoid some edge cases
+      "User-Agent": "contributors-svg-generator",
+    },
+    redirect: "follow",
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch avatar for ${login}: ${res.status} ${res.statusText}`);
+  }
+
+  const arrayBuffer = await res.arrayBuffer();
+  const buf = Buffer.from(arrayBuffer);
+  const b64 = buf.toString("base64");
+  return `data:image/png;base64,${b64}`;
+}
+
 const args = parseArgs(process.argv);
 
 const repo = args.repo;
@@ -51,34 +71,49 @@ const rows = Math.max(1, Math.ceil(logins.length / columns));
 const width = columns * size + (columns - 1) * padding;
 const height = rows * size + (rows - 1) * padding;
 
-const items = logins.map((login, idx) => {
+const radius = Math.floor(size / 6);
+
+const items = [];
+for (let idx = 0; idx < logins.length; idx++) {
+  const login = logins[idx];
   const col = idx % columns;
   const row = Math.floor(idx / columns);
   const x = col * (size + padding);
   const y = row * (size + padding);
 
-  // GitHub avatar URL is stable; s= controls requested size.
-  const avatar = `https://github.com/${encodeURIComponent(login)}.png?size=${size}`;
   const profile = `https://github.com/${encodeURIComponent(login)}`;
-
-  // Clip to rounded rect
   const clipId = `clip-${idx}`;
-  return `
+
+  let dataUrl;
+  try {
+    dataUrl = await fetchAvatarDataUrl(login, size);
+  } catch (e) {
+    // Fallback: if avatar fetch fails, render an empty rect with the login text
+    const label = escAttr(login);
+    items.push(`
+  <a xlink:href="${escAttr(profile)}" target="_blank" rel="noopener noreferrer">
+    <rect x="${x}" y="${y}" width="${size}" height="${size}" rx="${radius}" ry="${radius}" fill="#ddd" />
+    <text x="${x + 6}" y="${y + Math.floor(size / 2)}" font-size="10" fill="#555">${label}</text>
+  </a>`);
+    continue;
+  }
+
+  items.push(`
   <a xlink:href="${escAttr(profile)}" target="_blank" rel="noopener noreferrer">
     <defs>
       <clipPath id="${clipId}">
-        <rect x="${x}" y="${y}" width="${size}" height="${size}" rx="${Math.floor(size / 6)}" ry="${Math.floor(size / 6)}" />
+        <rect x="${x}" y="${y}" width="${size}" height="${size}" rx="${radius}" ry="${radius}" />
       </clipPath>
     </defs>
     <image
       x="${x}" y="${y}"
       width="${size}" height="${size}"
-      href="${escAttr(avatar)}"
+      href="${escAttr(dataUrl)}"
       preserveAspectRatio="xMidYMid slice"
       clip-path="url(#${clipId})"
     />
-  </a>`;
-});
+  </a>`);
+}
 
 const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg
