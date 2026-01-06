@@ -24,30 +24,31 @@ function escAttr(s) {
     .replace(/>/g, "&gt;");
 }
 
-async function fetchAvatarDataUrl(login, size) {
-  const url = `https://github.com/${encodeURIComponent(login)}.png?size=${size}`;
+async function fetchAsDataUrl(url) {
   const res = await fetch(url, {
-    headers: {
-      // A UA helps avoid some edge cases
-      "User-Agent": "contributors-svg-generator",
-    },
+    headers: { "User-Agent": "contributors-svg-generator" },
     redirect: "follow",
   });
 
   if (!res.ok) {
-    throw new Error(`Failed to fetch avatar for ${login}: ${res.status} ${res.statusText}`);
+    throw new Error(`Fetch failed: ${res.status} ${res.statusText} for ${url}`);
+  }
+
+  const ct = res.headers.get("content-type") || "";
+  if (!ct.startsWith("image/")) {
+    throw new Error(`Unexpected content-type: ${ct} for ${url}`);
   }
 
   const arrayBuffer = await res.arrayBuffer();
   const buf = Buffer.from(arrayBuffer);
   const b64 = buf.toString("base64");
-  return `data:image/png;base64,${b64}`;
+  return `data:${ct};base64,${b64}`;
 }
 
 const args = parseArgs(process.argv);
 
 const repo = args.repo;
-const input = args.input;
+const input = args.input; // contributors.json
 const output = args.output;
 
 const columns = Number(args.columns ?? 12);
@@ -56,44 +57,47 @@ const padding = Number(args.padding ?? 6);
 
 if (!repo || !input || !output) {
   console.error(
-    "Usage: node scripts/generate-contributors-svg.mjs --repo owner/name --input <logins.txt> --output <out.svg> [--columns N] [--size PX] [--padding PX]"
+    "Usage: node scripts/generate-contributors-svg.mjs --repo owner/name --input <contributors.json> --output <out.svg> [--columns N] [--size PX] [--padding PX]"
   );
   process.exit(1);
 }
 
-const logins = fs
-  .readFileSync(input, "utf8")
-  .split(/\r?\n/)
-  .map((s) => s.trim())
-  .filter(Boolean);
+const contributors = JSON.parse(fs.readFileSync(input, "utf8"))
+  .filter((c) => c && c.login && c.avatar_url && c.html_url);
 
-const rows = Math.max(1, Math.ceil(logins.length / columns));
+// Stable order: sort by login
+contributors.sort((a, b) => String(a.login).localeCompare(String(b.login)));
+
+const rows = Math.max(1, Math.ceil(contributors.length / columns));
 const width = columns * size + (columns - 1) * padding;
 const height = rows * size + (rows - 1) * padding;
-
 const radius = Math.floor(size / 6);
 
 const items = [];
-for (let idx = 0; idx < logins.length; idx++) {
-  const login = logins[idx];
+for (let idx = 0; idx < contributors.length; idx++) {
+  const c = contributors[idx];
+  const login = c.login;
+  const profile = c.html_url;
+
   const col = idx % columns;
   const row = Math.floor(idx / columns);
   const x = col * (size + padding);
   const y = row * (size + padding);
 
-  const profile = `https://github.com/${encodeURIComponent(login)}`;
   const clipId = `clip-${idx}`;
+
+  // Use avatar_url from API (works better for bot accounts), request size via s=
+  const avatarUrl = `${c.avatar_url}${c.avatar_url.includes("?") ? "&" : "?"}s=${size}`;
 
   let dataUrl;
   try {
-    dataUrl = await fetchAvatarDataUrl(login, size);
-  } catch (e) {
-    // Fallback: if avatar fetch fails, render an empty rect with the login text
-    const label = escAttr(login);
+    dataUrl = await fetchAsDataUrl(avatarUrl);
+  } catch {
+    // Fallback placeholder
     items.push(`
   <a xlink:href="${escAttr(profile)}" target="_blank" rel="noopener noreferrer">
     <rect x="${x}" y="${y}" width="${size}" height="${size}" rx="${radius}" ry="${radius}" fill="#ddd" />
-    <text x="${x + 6}" y="${y + Math.floor(size / 2)}" font-size="10" fill="#555">${label}</text>
+    <text x="${x + 6}" y="${y + Math.floor(size / 2)}" font-size="10" fill="#555">${escAttr(login)}</text>
   </a>`);
     continue;
   }
@@ -130,4 +134,4 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?>
 
 fs.mkdirSync(path.dirname(output), { recursive: true });
 fs.writeFileSync(output, svg, "utf8");
-console.log(`Wrote ${output} with ${logins.length} contributors.`);
+console.log(`Wrote ${output} with ${contributors.length} contributors.`);
