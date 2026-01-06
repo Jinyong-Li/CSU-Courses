@@ -1,5 +1,24 @@
 # 中南大学课程共享计划 😉
-
+<p align="center">
+  <a href="https://github.com/Jinyong-Li/CSU-Courses/stargazers">
+    <img src="https://img.shields.io/github/stars/Jinyong-Li/CSU-Courses?style=flat-square" alt="Stars" />
+  </a>
+  <a href="https://github.com/Jinyong-Li/CSU-Courses/network/members">
+    <img src="https://img.shields.io/github/forks/Jinyong-Li/CSU-Courses?style=flat-square" alt="Forks" />
+  </a>
+  <a href="https://github.com/Jinyong-Li/CSU-Courses/issues">
+    <img src="https://img.shields.io/github/issues/Jinyong-Li/CSU-Courses?style=flat-square" alt="Issues" />
+  </a>
+  <a href="https://github.com/Jinyong-Li/CSU-Courses/pulls">
+    <img src="https://img.shields.io/github/issues-pr/Jinyong-Li/CSU-Courses?style=flat-square" alt="Pull Requests" />
+  </a>
+  <a href="https://github.com/Jinyong-Li/CSU-Courses/commits/main">
+    <img src="https://img.shields.io/github/last-commit/Jinyong-Li/CSU-Courses?style=flat-square" alt="Last Commit" />
+  </a>
+  <a href="https://github.com/Jinyong-Li/CSU-Courses/graphs/contributors">
+    <img src="https://img.shields.io/github/contributors/Jinyong-Li/CSU-Courses?style=flat-square" alt="Contributors" />
+  </a>
+</p>
 中南大学课程共享计划——CSU-Courses，欢迎大家贡献！
 正是大家的关注、维护和贡献，才使这个项目得以持续完善、不断更新，帮助更多同学更高效地学习与备考~
 
