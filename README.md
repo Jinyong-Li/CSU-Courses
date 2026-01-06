@@ -15,6 +15,9 @@
   <a href="https://github.com/Jinyong-Li/CSU-Courses/commits/main">
     <img src="https://img.shields.io/github/last-commit/Jinyong-Li/CSU-Courses?style=flat-square" alt="Last Commit" />
   </a>
+ <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+  <img src="https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey?style=flat-square" alt="License: CC BY-NC-SA 4.0" />
+  </a>
   <a href="https://github.com/Jinyong-Li/CSU-Courses/graphs/contributors">
     <img src="https://img.shields.io/github/contributors/Jinyong-Li/CSU-Courses?style=flat-square" alt="Contributors" />
   </a>
