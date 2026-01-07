@@ -28,11 +28,10 @@
 ## 帮助大家养成规律作息~
 [睡眠记录/早睡早起打卡](https://github.com/Jinyong-Li/sleep-checkin)
 >[!note]
-> 每个人开一个Issue，两个基本指令：
+> 每个人开一个Issue，两个基本指令为：
 >
-> 睡觉：/sleep
->
-> 起床：/wake
+> - 睡觉：`/sleep`
+> - 起床：`/wake`
 
 
 ## 如何为本项目贡献
