@@ -1,0 +1,42 @@
+name: 新增课程
+description: 申请创建一个新的课程资料目录
+title: "[新增课程] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢你参与中南大学课程共享计划！
+        填写以下信息，我们将自动创建课程目录并提交审核。
+
+  - type: input
+    id: course_name
+    attributes:
+      label: 课程名称
+      description: 请输入完整课程名称
+      placeholder: 例如：高等数学
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: 课程分类
+      description: 请选择最符合的课程分类
+      options:
+        - 公共基础课
+        - 专业基础课
+        - 专业核心课
+        - 通识选修课
+        - 实验实践课
+        - 其他
+    validations:
+      required: true
+
+  - type: input
+    id: keywords
+    attributes:
+      label: 关键词（选填）
+      description: 多个关键词使用中文逗号分隔
+      placeholder: 例如：数学、微积分、考研
+    validations:
+      required: false
