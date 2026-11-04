@@ -89,7 +89,7 @@ jobs:
               }
             }
             if (mode === '创建课程并上传资料' && attachments.length === 0) {
-              await comment('你选择了“创建课程并上传资料”，但未检测到附件。请重新创建 Issue，并在“上传课程资料”中选择文件。');
+              await comment('没有收到上传文件，请添加资料后重新提交。');
               return;
             }
 
@@ -98,7 +98,7 @@ jobs:
               await github.rest.repos.getContent({
                 owner, repo, path: name, ref: 'main'
               });
-              await comment(`课程「${name}」已经存在。请通过 Fork + PR 补充现有课程资料。`);
+              await comment(`「${name}」已经有课程目录了。欢迎直接提交资料 PR。`);
               return;
             } catch (err) {
               if (err.status !== 404) throw err;
@@ -243,8 +243,7 @@ jobs:
             } else {
               readme.push('暂无仓库内资料，欢迎继续贡献。');
             }
-            // README 只列出已成功导入的资料，不保留临时 Issue 附件链接。
-            // 未导入资料列在 PR 审核说明中，PR 将保持草稿状态。
+            // 课程页面仅展示已导入的资料；未完成的文件交给 PR 处理。
             readme.push('', '## 修读建议', '', '欢迎补充修读体验和注意事项。', '');
 
             const write = async (path, bytes, message) => {
@@ -263,14 +262,13 @@ jobs:
             const incomplete = pending.length > 0;
             const reviewNotes = incomplete ? [
               '',
-              '### 待处理附件（本 PR 是草稿）',
+              '### 需要补充的资料',
               '',
               ...pending.map((file, i) =>
                 `- [ ] ${safeLabel(file.label) || `附件 ${i + 1}`}：${file.reason}`
               ),
               '',
-              `请在申请 Issue #${issue.number} 查看原始附件，补齐资料后再将草稿 PR 标记为 Ready for review。`,
-              '未导入的附件不会写入课程 README。'
+              `请查看申请 Issue #${issue.number} 中的附件，补齐文件后标记为 Ready for review。`
             ] : [];
 
             const { data: pr } = await github.rest.pulls.create({
@@ -286,18 +284,18 @@ jobs:
                 `- 待人工处理：${pending.length} 个文件`,
                 ...reviewNotes,
                 '',
-                '请维护者检查课程名称、版权、附件内容及导入情况后再合并。',
+                '请审核课程和资料。',
                 '',
                 `Closes #${issue.number}`
               ].join('\n')
             });
             const status = incomplete
-              ? '有附件未能自动导入，已创建草稿 PR，需维护者处理后再审核。'
-              : '资料已全部导入（或本申请仅创建目录），可以正常审核。';
+              ? '有文件需要补充，已创建草稿 PR。'
+              : '可直接审核。';
             await comment([
               `课程 PR 已创建：${pr.html_url}`,
               '',
-              `成功导入 ${imported.length} 个资料文件；待处理 ${pending.length} 个。`,
+              `已添加 ${imported.length} 个文件；待补充 ${pending.length} 个。`,
               status,
               ...(incomplete ? [`详情请查看 PR 中的待处理清单。`] : [])
             ].join('\n'));
