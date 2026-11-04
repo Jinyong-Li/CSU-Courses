@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="#课程导航">浏览课程</a> ·
-  <a href="https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml">提交课程资料</a> ·
+  <a href="https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml">新增课程</a> ·
   <a href="#参与贡献">上传资料</a> ·
   <a href="https://github.com/Jinyong-Li/CSU-Courses/issues">问题反馈</a>
 </p>
@@ -38,40 +38,32 @@
 
 ## 参与贡献
 
-欢迎分享课程资料！可以根据需要选择以下两种方式：
+欢迎分享课程资料！**免 Fork 表单**和 **Fork + PR** 两种方式都可以新增或补充课程资料。
 
-| 可以做什么 | [表单提交（免 Fork）](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml) | Fork + PR |
+| 可以做什么 | 表单提交（免 Fork） | Fork + PR |
 | :--- | :---: | :---: |
 | 新增课程、补充已有课程 | ✅ | ✅ |
-| 上传普通课程文件 | ✅ | ✅ |
-| 分享网盘资料、补充修读建议 | ✅ | ✅ |
-| 上传 25–100 MiB 文件 | — | ✅（使用 Git） |
+| 上传普通文件、分享网盘链接 | ✅ | ✅ |
+| 补充课程介绍和修读建议 | ✅ | ✅ |
+| 上传 25–100 MiB 的文件 | — | ✅ |
 | 自由修改、整理已有文件 | — | ✅ |
-
-**简单提交用表单，需要自由编辑或上传大文件用 Fork + PR。**
 
 ### ① 表单提交（推荐，无需 Fork）
 
-**[➕ 点击填写「提交课程资料」表单](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml)**
+- **[➕ 新增课程](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml)**：填写课程名称、分类，可同时上传资料。
+- **[📚 补充已有课程](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=supplement-course.yml)**：从下拉列表选择课程，上传文件或分享网盘链接。
 
-填写课程名称，再按需上传文件、分享网盘链接或补充课程说明。机器人会自动识别：
-
-- **新增课程**：创建课程目录和 README，可同时收录文件、网盘资料。
-- **已有课程**：直接追加资料或学习建议，不覆盖原内容。
-
-表单顶部会自动列出已有课程，点击即可预填课程名称。提交后自动生成 Pull Request（PR），由维护者审核合并。没有资料也可以申请新增课程。
+提交后机器人自动创建 PR，由维护者审核。**即使在新增表单中填写了已有课程，只要提供了新资料，也会自动按补充资料处理，不覆盖课程原有内容。**
 
 ### ② Fork + PR（适合自由修改和上传较大文件）
 
 **Fork 仓库 → 创建分支 → 添加资料 → 提交 PR。**
 
-可以新增课程、补充文件或网盘链接，也可以直接修改已有课程内容。
-
 <details>
 <summary><strong>展开查看 GitHub 网页端上传流程</strong></summary>
 
 1. 点击仓库右上角 **Fork**，复制仓库到自己的账号。
-2. 在自己的 Fork 中从 `main` 新建分支，如 `add-math-notes`。
+2. 在自己的 Fork 中从 `main` 创建一个新分支，如 `add-math-notes`。
 3. 进入对应课程目录，点击 **Add file → Upload files**，上传资料。新增课程时，可先创建 `课程名/README.md`。
 4. 点击 **Commit changes**，提交到刚才的新分支。
 5. 点击 **Contribute → Open pull request**，确认目标仓库为 `Jinyong-Li/CSU-Courses`、目标分支为 `main`。
@@ -90,21 +82,20 @@
 | :--- | :--- |
 | ≤25 MiB | 表单上传或 GitHub 网页上传 |
 | 25–100 MiB | Fork 后使用 Git 命令行上传，再提交 PR |
-| >100 MiB | 通过表单提交网盘链接，或在课程 README 中添加分享链接并提交 PR |
+| >100 MiB | 在表单中填写网盘链接，或通过 Fork + PR 添加链接 |
 
-**25–100 MiB：** Fork 并克隆仓库到本地，创建分支后执行：
+**25–100 MiB：** Fork 并克隆仓库到本地，将文件复制到课程目录后执行：
 
 ```bash
 git switch -c add-large-course-file
-# 将资料放入对应课程目录后
 git add .
 git commit -m "docs: 补充课程资料"
 git push -u origin add-large-course-file
 ```
 
-然后在 GitHub 向本仓库发起 PR。
+然后在 GitHub 上向本仓库发起 PR。
 
-**超过 100 MiB：** 将资料上传到网盘，可以直接在表单中填写，也可以通过 Fork + PR 添加链接。例如：
+**超过 100 MiB：** 将资料上传到网盘，通过表单分享链接，或编辑课程 README：
 
 ```markdown
 ### 网盘资料
@@ -117,7 +108,7 @@ git push -u origin add-large-course-file
 <details>
 <summary><strong>手动新增课程时，README 怎么写？</strong></summary>
 
-在课程目录下创建 `README.md`，将模板中的「课程名称」替换成文件夹名称。使用表单新增课程时会自动生成，并带有「补充本课程资料」链接。
+在课程目录下创建 `README.md`，替换课程名称和分类。使用表单新增课程时会自动生成。
 
 ```markdown
 <!-- COURSE_META_START
@@ -127,7 +118,7 @@ COURSE_META_END -->
 
 # 课程名称
 
-**[➕ 补充本课程资料（免 Fork）](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=课程名称)**
+**[➕ 补充本课程资料（免 Fork）](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=supplement-course.yml&existing_course=课程名称)**
 
 > **课程分类**：专业基础课  
 > **关键词**：算法 · 数据结构
