@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""扫描课程文件夹，更新首页课程导航和 Issue 表单的快捷课程链接。
+"""扫描课程文件夹，更新首页课程导航和补充表单的已有课程下拉选项。
 
 运行：python scripts/sync_course_catalog.py
 预览：python scripts/sync_course_catalog.py --check
@@ -17,7 +17,7 @@ from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent.parent
 README = ROOT / 'README.md'
-FORM = ROOT / '.github' / 'ISSUE_TEMPLATE' / 'add-course.yml'
+FORM = ROOT / '.github' / 'ISSUE_TEMPLATE' / 'supplement-course.yml'
 REPOSITORY = 'https://github.com/Jinyong-Li/CSU-Courses'
 CATEGORIES = ('公共基础课', '专业基础课', '专业核心课', '通识选修课', '实验实践课', '其他')
 EXCLUDED_DIRS = {
@@ -86,7 +86,7 @@ def md_label(value: str) -> str:
 
 def course_link(name: str, *, to_form: bool) -> str:
     if to_form:
-        url = f'{REPOSITORY}/issues/new?template=add-course.yml&course_name={quote(name, safe="")}'
+        url = f'{REPOSITORY}/issues/new?template=supplement-course.yml&existing_course={quote(name, safe="")}'
     else:
         url = './' + quote(name, safe='') + '/'
     return f'[{md_label(name)}]({url})'
@@ -111,16 +111,11 @@ def render_index(groups: dict[str, list[str]]) -> str:
     return '\n'.join(lines)
 
 
-def render_form_shortcuts(groups: dict[str, list[str]]) -> str:
-    lines = []
-    for category in CATEGORIES:
-        names = groups.get(category, [])
-        if names:
-            links = ' · '.join(course_link(n, to_form=True) for n in names)
-            # YAML 的 value: | 块内必须缩进 8 个空格。
-            lines.append(f'        **{category}**：{links}')
-            lines.append('')
-    return '\n'.join(lines).rstrip() if lines else '        暂无课程，可以直接填写新课程名称。'
+def render_form_options(groups: dict[str, list[str]]) -> str:
+    # 生成 GitHub Issue Form 下拉框选项；写成双引号字符串，兼容特殊字符。
+    import json
+    names = [name for category in CATEGORIES for name in groups.get(category, [])]
+    return "\n".join("        - " + json.dumps(name, ensure_ascii=False) for name in names)
 
 
 def replace_region(src: str, start: str, end: str, content: str) -> str:
@@ -163,7 +158,7 @@ def main() -> int:
         return 0
     changes = 0
     changes += update_file(README, '<!-- COURSE_INDEX_START -->', '<!-- COURSE_INDEX_END -->', render_index(groups), args.check)
-    changes += update_file(FORM, '<!-- COURSE_SHORTCUTS_START -->', '<!-- COURSE_SHORTCUTS_END -->', render_form_shortcuts(groups), args.check)
+    changes += update_file(FORM, '# COURSE_OPTIONS_START', '# COURSE_OPTIONS_END', render_form_options(groups), args.check)
     return 1 if args.check and changes else 0
 
 
