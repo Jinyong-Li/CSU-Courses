@@ -6,7 +6,6 @@
 
 <p align="center">
   <a href="#课程导航">浏览课程</a> ·
-  <a href="https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml">新增课程</a> ·
   <a href="#参与贡献">上传资料</a> ·
   <a href="https://github.com/Jinyong-Li/CSU-Courses/issues">问题反馈</a>
 </p>
