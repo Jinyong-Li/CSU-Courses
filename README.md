@@ -69,7 +69,7 @@
 
 ### ② 为已有课程补充资料（Fork + PR）
 
-课程已存在时，直接 Fork 本仓库，创建分支、上传文件并提交 PR 即可。
+课程已存在时，直接 Fork 本仓库，创建分支、添加资料文件（或在课程 README 中补充网盘链接），再提交 PR 即可。
 
 <details>
 <summary><strong>展开查看 GitHub 网页端上传流程</strong></summary>
@@ -91,7 +91,7 @@
 | :--- | :--- | :--- |
 | **≤25 MiB** | 网页上传 / Issue 表单 | Issue 自动导入建议遵守上面的 20 MiB、5 个文件限制 |
 | **25–100 MiB** | **Fork + Git 命令行 + PR** | 普通 Git 文件超过 50 MiB 会收到警告，100 MiB 为硬限制 |
-| **>100 MiB** | **Git LFS** | 需提前确认公开 Fork 的 LFS 上传权限和仓库配额 |
+| **>100 MiB** | **网盘分享链接 + PR** | 将资料上传至网盘，在课程 README 中添加资料名称、下载链接及提取码（如有） |
 
 **新课程也可以直接走 Fork + PR：** 在同一个分支中新建 `课程名/README.md`、添加资料文件，一次 PR 即可提交完成，**不必先填「新增课程」Issue**。
 
@@ -112,22 +112,24 @@ git push origin add-large-course-file
 </details>
 
 <details>
-<summary><strong>查看 100 MiB 以上的 Git LFS 上传方式（进阶）</strong></summary>
+<summary><strong>查看 100 MiB 以上的网盘资料提交方式</strong></summary>
 
-**请先与维护者确认 LFS 是否可用。** GitHub 对公开 Fork 上传新的 LFS 对象有限制：只有仓库网络中已存在 LFS 对象，或贡献者对根仓库有写入权限时，才允许上传。LFS 存储和下载流量会计入原仓库所有者的额度，不能保证每位同学都能直接上传。
+**无需 Git LFS，也不必将大文件放进 Git 仓库。** 先把文件上传到常用网盘，再通过 Fork + PR，在对应课程文件夹的 `README.md` 中提供下载信息。
 
-在确认可用、并安装了 [Git LFS](https://git-lfs.com/) 后：
+建议按下面的格式填写：
 
-```bash
-git lfs install
-# 建议只追踪具体大文件，避免把所有小文件都纳入 LFS
-git lfs track "课程名/资料/大型资料.zip"
-git add .gitattributes "课程名/资料/大型资料.zip"
-git commit -m "docs: 添加大文件资料"
-git push origin 你的贡献分支
+```markdown
+### 大文件资料（网盘）
+
+- [课程复习资料合集（约 300 MB）](https://pan.baidu.com/s/你的分享链接)（提取码：abcd）
 ```
 
-LFS 文件在仓库目录中仍有对应路径，但 Git 历史里保存的是指针；请不要把它误认为普通 Git 文件。若 Fork 上传 LFS 失败，可通过 [Issue 联系维护者](https://github.com/Jinyong-Li/CSU-Courses/issues/new/choose)，无需在课程 README 中留下临时网盘或 Issue 附件链接。
+- **已有课程**：Fork 后修改课程 `README.md`，添加网盘链接并提交 PR。
+- **尚未收录的课程**：也可以通过一次 PR 同时创建课程文件夹、`README.md` 和网盘链接，不必先申请创建空目录。
+- 请写明资料名称、内容简介及提取码（如有），尽量选择长期有效的分享链接，并确保资料允许公开分享。
+- 链接可能过期或失效，欢迎通过 Issue 反馈，由贡献者或维护者及时修正。
+
+> **只在课程 README 中保留最终网盘资料链接**，不把临时 Issue 附件链接当成课程资料。网盘文件由对应平台托管，不会占用本仓库的 Git LFS 配额。
 
 </details>
 
