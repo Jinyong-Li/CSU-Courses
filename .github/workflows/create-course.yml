@@ -1,4 +1,5 @@
-name: Create Course from Issue
+
+name: 自动创建课程 PR
 
 on:
   issues:
@@ -12,4 +13,130 @@ permissions:
 jobs:
   create-course:
     if: startsWith(github.event.issue.title, '[新增课程]')
-    runs-on
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 解析表单并创建课程 PR
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const issue = context.payload.issue;
+            const body = issue.body || '';
+
+            // 读取 Issue Form 自动生成的 Markdown 字段
+            const fields = {};
+            for (const part of body.split(/^###\s+/m).slice(1)) {
+              const pos = part.indexOf('\n');
+              if (pos < 0) continue;
+              const label = part.slice(0, pos).trim();
+              const value = part.slice(pos + 1).trim();
+              fields[label] = value;
+            }
+
+            const name = (fields['课程名称'] || '').normalize('NFC').trim();
+            const category = (fields['课程分类'] || '').trim();
+            let keywords = (fields['关键词（选填）'] || '').trim();
+            if (/^_?No response_?$/i.test(keywords)) keywords = '';
+
+            const categories = [
+              '公共基础课', '专业基础课', '专业核心课',
+              '通识选修课', '实验实践课', '其他'
+            ];
+            const validText = /^[\p{L}\p{N} _（）()·.+#-]+$/u;
+            const keywordList = keywords
+              ? keywords.split(/[、，,]/).map(x => x.trim()).filter(Boolean)
+              : [];
+
+            const comment = async message => {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: issue.number, body: message
+              });
+            };
+
+            if (!name || [...name].length > 60 || !validText.test(name)
+                || name.startsWith('.') || name.endsWith('.')) {
+              await comment('课程名称不符合要求：请使用 1～60 个字符，仅支持中文、英文、数字、空格及常见课程符号。请重新提交申请。');
+              return;
+            }
+            if (!categories.includes(category)) {
+              await comment('课程分类无效，请通过「新增课程」表单重新提交。');
+              return;
+            }
+            if (keywordList.length > 10 || keywordList.some(
+              x => [...x].length > 30 || !validText.test(x)
+            )) {
+              await comment('关键词格式不正确：最多 10 个，每个不超过 30 个字符，请用逗号或顿号分隔。');
+              return;
+            }
+
+            // 已有课程不重复创建
+            try {
+              await github.rest.repos.getContent({
+                owner, repo, path: name, ref: 'main'
+              });
+              await comment(`课程目录「${name}」已经存在，请直接向该课程提交资料 PR。`);
+              return;
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
+
+            const branch = `add-course/issue-${issue.number}`;
+            const { data: base } = await github.rest.repos.getBranch({
+              owner, repo, branch: 'main'
+            });
+            await github.rest.git.createRef({
+              owner, repo,
+              ref: `refs/heads/${branch}`,
+              sha: base.commit.sha
+            });
+
+            const readme = [
+              '<!-- COURSE_META_START -->',
+              `分类：${category}`,
+              `关键词：${keywordList.join('、')}`,
+              '<!-- COURSE_META_END -->',
+              '',
+              `# ${name}`,
+              '',
+              '## 课程简介',
+              '',
+              '欢迎补充课程简介。',
+              '',
+              '## 资料说明',
+              '',
+              '欢迎上传课件、作业、复习资料等。',
+              '',
+              '## 其他说明',
+              '',
+              '欢迎补充修读建议和注意事项。',
+              ''
+            ].join('\n');
+
+            await github.rest.repos.createOrUpdateFileContents({
+              owner, repo,
+              path: `${name}/README.md`,
+              branch,
+              message: `docs: 新增课程 ${name} (#${issue.number})`,
+              content: Buffer.from(readme, 'utf8').toString('base64')
+            });
+
+            const { data: pr } = await github.rest.pulls.create({
+              owner, repo,
+              head: branch,
+              base: 'main',
+              title: `新增课程：${name}`,
+              body: [
+                `由课程申请 #${issue.number} 自动创建。`,
+                '',
+                `- 课程：${name}`,
+                `- 分类：${category}`,
+                `- 关键词：${keywordList.join('、') || '无'}`,
+                '',
+                `Closes #${issue.number}`
+              ].join('\n')
+            });
+
+            await comment(`课程目录已生成，等待维护者审核：${pr.html_url}`);
+            core.info(`已创建 PR: ${pr.html_url}`);
