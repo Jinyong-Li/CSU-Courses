@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="#课程导航">浏览课程</a> ·
-  <a href="https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml">新增课程</a> ·
+  <a href="https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml">提交课程资料</a> ·
   <a href="#参与贡献">上传资料</a> ·
   <a href="https://github.com/Jinyong-Li/CSU-Courses/issues">问题反馈</a>
 </p>
@@ -26,12 +26,11 @@
 
 | 分类 | 课程与资源 |
 | :--- | :--- |
-| **数学与公共基础** | [高等数学](./高等数学/) · [大学物理](./大学物理/) · [英语](./英语/) |
-| **计算机与工程基础** | [大计基](./大计基/) · [电工学](./电工学/) |
-| **思想政治与国防** | [习概](./习概/) · [毛概](./毛概/) · [马克思主义基本原理](./马克思主义基本原理/) · [军事理论](./军事理论/) |
-| **通识与心理健康** | [公选课](./公选课/) · [健康心理学](./健康心理学/) · [大学生心理健康教育](./大学生心理健康教育/) |
-| **工程实践** | [制造工程训练](./制造工程训练/) · [金工实习](./金工实习/) |
-| **实用模板** | [PPT 模板](./PPT模板/) · [简历模板](./简历模板/) |
+| **公共基础课** | [习概](./%E4%B9%A0%E6%A6%82/) · [军事理论](./%E5%86%9B%E4%BA%8B%E7%90%86%E8%AE%BA/) · [大学物理](./%E5%A4%A7%E5%AD%A6%E7%89%A9%E7%90%86/) · [毛概](./%E6%AF%9B%E6%A6%82/) · [英语](./%E8%8B%B1%E8%AF%AD/) · [马克思主义基本原理](./%E9%A9%AC%E5%85%8B%E6%80%9D%E4%B8%BB%E4%B9%89%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/) · [高等数学](./%E9%AB%98%E7%AD%89%E6%95%B0%E5%AD%A6/) |
+| **专业基础课** | [大计基](./%E5%A4%A7%E8%AE%A1%E5%9F%BA/) · [电工学](./%E7%94%B5%E5%B7%A5%E5%AD%A6/) |
+| **通识选修课** | [健康心理学](./%E5%81%A5%E5%BA%B7%E5%BF%83%E7%90%86%E5%AD%A6/) · [公选课](./%E5%85%AC%E9%80%89%E8%AF%BE/) · [大学生心理健康教育](./%E5%A4%A7%E5%AD%A6%E7%94%9F%E5%BF%83%E7%90%86%E5%81%A5%E5%BA%B7%E6%95%99%E8%82%B2/) |
+| **实验实践课** | [制造工程训练](./%E5%88%B6%E9%80%A0%E5%B7%A5%E7%A8%8B%E8%AE%AD%E7%BB%83/) · [金工实习](./%E9%87%91%E5%B7%A5%E5%AE%9E%E4%B9%A0/) |
+| **其他** | [PPT模板](./PPT%E6%A8%A1%E6%9D%BF/) · [简历模板](./%E7%AE%80%E5%8E%86%E6%A8%A1%E6%9D%BF/) |
 
 <!-- COURSE_INDEX_END -->
 
@@ -39,63 +38,73 @@
 
 ## 参与贡献
 
-### ① 新增课程（无需 Fork）
+欢迎分享课程资料！可以根据需要选择以下两种方式：
 
-**[➕ 点击填写「新增课程」表单](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml)**
+| 可以做什么 | [表单提交（免 Fork）](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml) | Fork + PR |
+| :--- | :---: | :---: |
+| 新增课程、补充已有课程 | ✅ | ✅ |
+| 上传普通课程文件 | ✅ | ✅ |
+| 分享网盘资料、补充修读建议 | ✅ | ✅ |
+| 上传 25–100 MiB 文件 | — | ✅（使用 Git） |
+| 自由修改、整理已有文件 | — | ✅ |
 
-填写课程名称、分类和关键词（选填）；**有资料就直接上传，没有资料留空即可**。
+**简单提交用表单，需要自由编辑或上传大文件用 Fork + PR。**
 
-提交后会自动创建课程目录和 `README.md`，上传的资料也会一并提交到 Pull Request（PR），由维护者审核合并。较大的文件可以按下方的方法提交。
+### ① 表单提交（推荐，无需 Fork）
 
-### ② 补充已有课程资料（Fork + PR）
+**[➕ 点击填写「提交课程资料」表单](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml)**
 
-**Fork 仓库 → 创建分支 → 上传资料 → 提交 PR**。
+填写课程名称，再按需上传文件、分享网盘链接或补充课程说明。机器人会自动识别：
+
+- **新增课程**：创建课程目录和 README，可同时收录文件、网盘资料。
+- **已有课程**：直接追加资料或学习建议，不覆盖原内容。
+
+表单顶部会自动列出已有课程，点击即可预填课程名称。提交后自动生成 Pull Request（PR），由维护者审核合并。没有资料也可以申请新增课程。
+
+### ② Fork + PR（适合自由修改和上传较大文件）
+
+**Fork 仓库 → 创建分支 → 添加资料 → 提交 PR。**
+
+可以新增课程、补充文件或网盘链接，也可以直接修改已有课程内容。
 
 <details>
 <summary><strong>展开查看 GitHub 网页端上传流程</strong></summary>
 
 1. 点击仓库右上角 **Fork**，复制仓库到自己的账号。
 2. 在自己的 Fork 中从 `main` 新建分支，如 `add-math-notes`。
-3. 进入对应课程目录，点击 **Add file → Upload files**，上传资料。
+3. 进入对应课程目录，点击 **Add file → Upload files**，上传资料。新增课程时，可先创建 `课程名/README.md`。
 4. 点击 **Commit changes**，提交到刚才的新分支。
-5. 点击 **Contribute → Open pull request**，确保目标是 `Jinyong-Li/CSU-Courses` 的 `main`。
+5. 点击 **Contribute → Open pull request**，确认目标仓库为 `Jinyong-Li/CSU-Courses`、目标分支为 `main`。
 6. 填写 PR 标题和说明，点击 **Create pull request**，等待审核。
 
-**PR 仍处于 Open 状态时**，可以继续向对应分支上传文件并 Commit，新提交会自动追加到同一个 PR，无需重复创建。
-
-如果需要新增一门尚未收录的课程，也可以在分支中创建 `课程名/README.md`，连同资料一起提交，不必先创建空目录。下方有课程 README 模板。
+**PR 仍处于 Open 状态时**，可以继续向对应分支上传资料并 Commit，新提交会自动追加到同一个 PR。合并后，建议从最新的 `main` 新建分支。
 
 </details>
 
-### ③ 大文件上传
-
-| 单个文件大小 | 推荐方式 |
-| :--- | :--- |
-| **≤25 MiB** | GitHub 网页上传；新增课程也可使用表单上传小文件 |
-| **25–100 MiB** | Fork 后通过 Git 命令行上传，再提交 PR |
-| **>100 MiB** | 上传网盘，在课程 `README.md` 中添加分享链接并提交 PR |
+### 更多说明
 
 <details>
-<summary><strong>查看 25–100 MiB 文件上传方法</strong></summary>
+<summary><strong>文件较大时怎么上传？</strong></summary>
 
-先 Fork 本仓库并克隆到本地，在仓库目录中执行：
+| 文件大小 | 推荐方式 |
+| :--- | :--- |
+| ≤25 MiB | 表单上传或 GitHub 网页上传 |
+| 25–100 MiB | Fork 后使用 Git 命令行上传，再提交 PR |
+| >100 MiB | 通过表单提交网盘链接，或在课程 README 中添加分享链接并提交 PR |
+
+**25–100 MiB：** Fork 并克隆仓库到本地，创建分支后执行：
 
 ```bash
 git switch -c add-large-course-file
-# 将资料文件复制到对应课程目录后
+# 将资料放入对应课程目录后
 git add .
 git commit -m "docs: 补充课程资料"
 git push -u origin add-large-course-file
 ```
 
-然后在 GitHub 上向本仓库的 `main` 分支发起 PR。
+然后在 GitHub 向本仓库发起 PR。
 
-</details>
-
-<details>
-<summary><strong>查看网盘资料的提交方法</strong></summary>
-
-对于超过 100 MiB 的资料，可以先上传网盘，再在课程 `README.md` 中添加链接：
+**超过 100 MiB：** 将资料上传到网盘，可以直接在表单中填写，也可以通过 Fork + PR 添加链接。例如：
 
 ```markdown
 ### 网盘资料
@@ -103,14 +112,12 @@ git push -u origin add-large-course-file
 - [期末复习资料合集（约 300 MB）](https://pan.baidu.com/s/分享链接)（提取码：abcd）
 ```
 
-通过 Fork + PR 提交 README 的修改即可。新课程也可以一次 PR 同时创建目录并添加网盘链接。
-
 </details>
 
 <details>
-<summary><strong>新建课程时，README 怎么写？</strong></summary>
+<summary><strong>手动新增课程时，README 怎么写？</strong></summary>
 
-在课程文件夹中创建 `README.md`，可使用以下模板。课程名称以文件夹名为准，关键词选填。
+在课程目录下创建 `README.md`，将模板中的「课程名称」替换成文件夹名称。使用表单新增课程时会自动生成，并带有「补充本课程资料」链接。
 
 ```markdown
 <!-- COURSE_META_START
@@ -119,6 +126,8 @@ git push -u origin add-large-course-file
 COURSE_META_END -->
 
 # 课程名称
+
+**[➕ 补充本课程资料（免 Fork）](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=课程名称)**
 
 > **课程分类**：专业基础课  
 > **关键词**：算法 · 数据结构
@@ -134,7 +143,7 @@ COURSE_META_END -->
 
 </details>
 
-如果不会使用 Git，或者想反馈资料问题，也欢迎 [提交 Issue](https://github.com/Jinyong-Li/CSU-Courses/issues/new/choose)。
+如果不熟悉 Git，或发现资料有误，也欢迎 [提交 Issue](https://github.com/Jinyong-Li/CSU-Courses/issues/new/choose)。
 
 ## 资料规范与版权说明
 
