@@ -1,0 +1,64 @@
+name: 补充已有课程
+description: 选择课程并补充文件、网盘资料或学习建议
+title: "[补充课程] "
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        选择已有课程，上传文件或填写网盘链接、课程说明后提交即可。
+
+  - type: dropdown
+    id: existing_course
+    attributes:
+      label: 选择已有课程
+      description: 按课程名称选择
+      options:
+        # COURSE_OPTIONS_START
+        - "习概"
+        - "军事理论"
+        - "大学物理"
+        - "毛概"
+        - "英语"
+        - "马克思主义基本原理"
+        - "高等数学"
+        - "大计基"
+        - "电工学"
+        - "健康心理学"
+        - "公选课"
+        - "大学生心理健康教育"
+        - "制造工程训练"
+        - "金工实习"
+        - "PPT模板"
+        - "简历模板"
+        # COURSE_OPTIONS_END
+    validations:
+      required: true
+
+  - type: upload
+    id: course_files
+    attributes:
+      label: 上传课程资料（选填）
+      description: PDF、Word、PPT、ZIP 等资料
+    validations:
+      required: false
+      accept: ".pdf,.docx,.pptx,.xlsx,.zip,.png,.jpg,.jpeg,.webp,.txt"
+
+  - type: textarea
+    id: netdisk_links
+    attributes:
+      label: 网盘资料（选填）
+      description: 每行一条：资料名称 | 分享链接 | 提取码（可不填）
+      placeholder: |
+        期末复习资料 | https://pan.baidu.com/s/xxxx | abcd
+        课程视频 | https://pan.quark.cn/s/xxxx
+    validations:
+      required: false
+
+  - type: textarea
+    id: course_notes
+    attributes:
+      label: 课程说明或修读建议（选填）
+      placeholder: 例如：推荐先学习基础章节，再复习往年试题。
+    validations:
+      required: false

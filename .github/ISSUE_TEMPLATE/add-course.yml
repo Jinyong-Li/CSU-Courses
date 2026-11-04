@@ -1,33 +1,18 @@
-name: 提交课程资料
-description: 新增课程、补充文件或分享网盘资料，无需 Fork
-title: "[课程资料] "
+name: 新增课程
+description: 创建新课程，可同时上传资料或分享网盘链接
+title: "[新增课程] "
 
 body:
   - type: markdown
     attributes:
       value: |
-        新增课程或给已有课程补充资料，填写并提交即可。机器人会创建 PR，交由维护者审核。
-
-        **已有课程 · 快速填写：** 点击课程名称，即可预填表单。
-        <!-- COURSE_SHORTCUTS_START -->
-
-        **公共基础课**：[习概](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=%E4%B9%A0%E6%A6%82) · [军事理论](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=%E5%86%9B%E4%BA%8B%E7%90%86%E8%AE%BA) · [大学物理](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=%E5%A4%A7%E5%AD%A6%E7%89%A9%E7%90%86) · [毛概](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=%E6%AF%9B%E6%A6%82) · [英语](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=%E8%8B%B1%E8%AF%AD) · [马克思主义基本原理](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=%E9%A9%AC%E5%85%8B%E6%80%9D%E4%B8%BB%E4%B9%89%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86) · [高等数学](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=%E9%AB%98%E7%AD%89%E6%95%B0%E5%AD%A6)
-
-        **专业基础课**：[大计基](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=%E5%A4%A7%E8%AE%A1%E5%9F%BA) · [电工学](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=%E7%94%B5%E5%B7%A5%E5%AD%A6)
-
-        **通识选修课**：[健康心理学](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=%E5%81%A5%E5%BA%B7%E5%BF%83%E7%90%86%E5%AD%A6) · [公选课](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=%E5%85%AC%E9%80%89%E8%AF%BE) · [大学生心理健康教育](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=%E5%A4%A7%E5%AD%A6%E7%94%9F%E5%BF%83%E7%90%86%E5%81%A5%E5%BA%B7%E6%95%99%E8%82%B2)
-
-        **实验实践课**：[制造工程训练](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=%E5%88%B6%E9%80%A0%E5%B7%A5%E7%A8%8B%E8%AE%AD%E7%BB%83) · [金工实习](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=%E9%87%91%E5%B7%A5%E5%AE%9E%E4%B9%A0)
-
-        **其他**：[PPT模板](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=PPT%E6%A8%A1%E6%9D%BF) · [简历模板](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml&course_name=%E7%AE%80%E5%8E%86%E6%A8%A1%E6%9D%BF)
-
-        <!-- COURSE_SHORTCUTS_END -->
+        填写课程信息并提交，机器人会自动创建 PR，等待维护者审核。
+        如果填写的课程已经存在，上传的资料也会自动转为补充该课程。
 
   - type: input
     id: course_name
     attributes:
       label: 课程名称
-      description: 新课程填写新名称；已有课程填写文件夹原名称
       placeholder: 例如：高等数学
     validations:
       required: true
@@ -35,8 +20,7 @@ body:
   - type: dropdown
     id: category
     attributes:
-      label: 课程分类（新增课程必填）
-      description: 已有课程不用选择
+      label: 课程分类
       options:
         - 公共基础课
         - 专业基础课
@@ -45,13 +29,13 @@ body:
         - 实验实践课
         - 其他
     validations:
-      required: false
+      required: true
 
   - type: input
     id: keywords
     attributes:
-      label: 关键词（新增课程选填）
-      placeholder: 例如：微积分、期末复习
+      label: 关键词（选填）
+      placeholder: 例如：数学、微积分、复习
     validations:
       required: false
 
@@ -59,7 +43,7 @@ body:
     id: course_files
     attributes:
       label: 上传课程资料（选填）
-      description: 可以直接选择 PDF、Word、PPT、ZIP 等课程资料
+      description: PDF、Word、PPT、ZIP 等资料
     validations:
       required: false
       accept: ".pdf,.docx,.pptx,.xlsx,.zip,.png,.jpg,.jpeg,.webp,.txt"
@@ -70,8 +54,8 @@ body:
       label: 网盘资料（选填）
       description: 每行一条：资料名称 | 分享链接 | 提取码（可不填）
       placeholder: |
-        期末复习资料合集 | https://pan.baidu.com/s/xxxx | abcd
-        课程视频资料 | https://pan.quark.cn/s/xxxx
+        期末复习资料 | https://pan.baidu.com/s/xxxx | abcd
+        课程视频 | https://pan.quark.cn/s/xxxx
     validations:
       required: false
 
@@ -79,7 +63,6 @@ body:
     id: course_notes
     attributes:
       label: 课程说明或修读建议（选填）
-      description: 可以补充学习建议、资料说明等
-      placeholder: 例如：建议先复习第一章，再做往年试题。
+      placeholder: 例如：推荐先学习基础章节，再复习往年试题。
     validations:
       required: false
