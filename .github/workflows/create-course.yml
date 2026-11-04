@@ -1,4 +1,3 @@
-
 name: 自动创建课程 PR
 
 on:
@@ -24,476 +23,201 @@ jobs:
             const { owner, repo } = context.repo;
             const issue = context.payload.issue;
             const body = issue.body || '';
+            const comment = async message => github.rest.issues.createComment({
+              owner, repo, issue_number: issue.number, body: message
+            });
 
-            const comment = async message =>
-              github.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number: issue.number,
-                body: message
-              });
-
-            // 读取 Issue Form 字段
+            // 从 Issue Form 生成的 Markdown 中读取字段
             const fields = {};
-
             for (const block of body.split(/^###\s+/m).slice(1)) {
               const pos = block.indexOf('\n');
               if (pos < 0) continue;
-
               const key = block.slice(0, pos).trim();
-
-              if (!(key in fields)) {
-                fields[key] = block.slice(pos + 1).trim();
-              }
+              if (!(key in fields)) fields[key] = block.slice(pos + 1).trim();
             }
-
-            const name = (
-              fields['课程名称'] || ''
-            ).normalize('NFC').trim();
-
-            const category = (
-              fields['课程分类'] || ''
-            ).trim();
-
-            const mode = (
-              fields['提交方式'] || ''
-            ).trim();
-
-            let rawKeywords = (
-              fields['关键词（选填）'] || ''
-            ).trim();
-
-            if (/^_?No response_?$/i.test(rawKeywords)) {
-              rawKeywords = '';
-            }
-
+            const name = (fields['课程名称'] || '').normalize('NFC').trim();
+            const category = (fields['课程分类'] || '').trim();
+            const mode = (fields['提交方式'] || '').trim();
+            let rawKeywords = (fields['关键词（选填）'] || '').trim();
+            if (/^_?No response_?$/i.test(rawKeywords)) rawKeywords = '';
             const keywords = rawKeywords
-              ? rawKeywords.split(/[、，,]/)
-                  .map(s => s.trim())
-                  .filter(Boolean)
+              ? rawKeywords.split(/[、，,]/).map(s => s.trim()).filter(Boolean)
               : [];
-
             const categories = [
-              '公共基础课',
-              '专业基础课',
-              '专业核心课',
-              '通识选修课',
-              '实验实践课',
-              '其他'
+              '公共基础课', '专业基础课', '专业核心课',
+              '通识选修课', '实验实践课', '其他'
             ];
+            const validText = /^[\p{L}\p{N} _（）()·.+#-]+$/u;
 
-            const validText =
-              /^[\p{L}\p{N} _（）()·.+#-]+$/u;
-
-            // 校验课程名称
-            if (
-              !name ||
-              [...name].length > 60 ||
-              !validText.test(name) ||
-              name.startsWith('.') ||
-              name.endsWith('.')
-            ) {
-              await comment(
-                '课程名称无效，请使用 1～60 个字符，不能包含斜杠或特殊路径字符。'
-              );
+            if (!name || [...name].length > 60 || !validText.test(name)
+                || name.startsWith('.') || name.endsWith('.')) {
+              await comment('课程名称无效，请使用 1～60 个字符，不能包含斜杠或特殊路径字符。');
               return;
             }
-
-            // 校验分类
             if (!categories.includes(category)) {
-              await comment(
-                '课程分类无效，请从表单给定的选项中选择。'
-              );
+              await comment('课程分类无效，请从表单给定的选项中选择。');
+              return;
+            }
+            if (!['仅创建课程目录', '创建课程并上传资料'].includes(mode)) {
+              await comment('提交方式无效，请从表单给定的选项中选择。');
+              return;
+            }
+            if (keywords.length > 10 || keywords.some(k =>
+                [...k].length > 30 || !validText.test(k))) {
+              await comment('关键词最多 10 个，每个最多 30 字，请用逗号分隔。');
               return;
             }
 
-            // 校验提交方式
-            if (![
-              '仅创建课程目录',
-              '创建课程并上传资料'
-            ].includes(mode)) {
-              await comment(
-                '提交方式无效，请从表单给定的选项中选择。'
-              );
-              return;
-            }
-
-            // 校验关键词
-            if (
-              keywords.length > 10 ||
-              keywords.some(k =>
-                [...k].length > 30 ||
-                !validText.test(k)
-              )
-            ) {
-              await comment(
-                '关键词最多 10 个，每个最多 30 字，请用逗号分隔。'
-              );
-              return;
-            }
-
-            // 解析 Issue 上传附件
-            // 只接受 GitHub 自己托管的附件 URL
-            const uploadField =
-              fields['上传课程资料（选填）'] || '';
-
+            // 只接受 GitHub 自己托管的 Issue 附件，不下载外部链接
+            const uploadField = fields['上传课程资料（选填）'] || '';
             const attachments = [];
             const seen = new Set();
-
-            const linkRE =
-              /!?\[([^\]\r\n]{1,180})\]\((https:\/\/github\.com\/user-attachments\/(?:assets|files)\/[^\s)]+)\)/g;
-
+            const linkRE = /!?\[([^\]\r\n]{1,180})\]\((https:\/\/github\.com\/user-attachments\/(?:assets|files)\/[^\s)]+)\)/g;
             for (const match of uploadField.matchAll(linkRE)) {
               const url = match[2];
-
               if (!seen.has(url)) {
-                attachments.push({
-                  label: match[1],
-                  url
-                });
+                attachments.push({ label: match[1], url });
                 seen.add(url);
               }
             }
-
-            // 兼容未使用 Markdown 标题的附件链接
-            const plainRE =
-              /https:\/\/github\.com\/user-attachments\/(?:assets|files)\/[^\s)>]+/g;
-
+            const plainRE = /https:\/\/github\.com\/user-attachments\/(?:assets|files)\/[^\s)>]+/g;
             for (const match of uploadField.matchAll(plainRE)) {
               const url = match[0];
-
               if (!seen.has(url)) {
-                attachments.push({
-                  label: '',
-                  url
-                });
+                attachments.push({ label: '', url });
                 seen.add(url);
               }
             }
-
-            if (
-              mode === '创建课程并上传资料' &&
-              attachments.length === 0
-            ) {
-              await comment(
-                '你选择了“创建课程并上传资料”，但未检测到附件。请重新创建 Issue，并在“上传课程资料”中选择文件。'
-              );
+            if (mode === '创建课程并上传资料' && attachments.length === 0) {
+              await comment('你选择了“创建课程并上传资料”，但未检测到附件。请重新创建 Issue，并在“上传课程资料”中选择文件。');
               return;
             }
 
-            // 检查课程是否已经存在
+            // 不重复创建 main 中已有的课程
             try {
               await github.rest.repos.getContent({
-                owner,
-                repo,
-                path: name,
-                ref: 'main'
+                owner, repo, path: name, ref: 'main'
               });
-
-              await comment(
-                `课程「${name}」已经存在。请通过 Fork + PR 补充现有课程资料。`
-              );
+              await comment(`课程「${name}」已经存在。请通过 Fork + PR 补充现有课程资料。`);
               return;
-
             } catch (err) {
-              if (err.status !== 404) {
-                throw err;
-              }
+              if (err.status !== 404) throw err;
             }
 
-            // 附件限制
+            // 附件下载：限制 GitHub 域名、大小、数量；不解压、不执行
             const MAX_FILE = 20 * 1024 * 1024;
             const MAX_TOTAL = 50 * 1024 * 1024;
-
             const ALLOWED = new Set([
-              '.pdf',
-              '.docx',
-              '.pptx',
-              '.xlsx',
-              '.zip',
-              '.png',
-              '.jpg',
-              '.jpeg',
-              '.webp',
-              '.txt'
+              '.pdf', '.docx', '.pptx', '.xlsx', '.zip',
+              '.png', '.jpg', '.jpeg', '.webp', '.txt'
             ]);
-
-            // 防止下载任意外部地址
             const isGithubHost = host =>
-              host === 'github.com' ||
-              host.endsWith('.githubusercontent.com');
-
-            // 下载 GitHub Issue 附件
+              host === 'github.com' || host.endsWith('.githubusercontent.com');
             async function download(url) {
               let next = url;
-
               for (let i = 0; i < 6; i++) {
                 const parsed = new URL(next);
-
-                if (
-                  parsed.protocol !== 'https:' ||
-                  !isGithubHost(parsed.hostname)
-                ) {
-                  throw new Error(
-                    '重定向到了非 GitHub 域名'
-                  );
+                if (parsed.protocol !== 'https:' || !isGithubHost(parsed.hostname)) {
+                  throw new Error('重定向到了非 GitHub 域名');
                 }
-
                 const controller = new AbortController();
-                const timer = setTimeout(
-                  () => controller.abort(),
-                  30000
-                );
-
+                const timer = setTimeout(() => controller.abort(), 30000);
                 let res;
-
                 try {
                   res = await fetch(next, {
-                    redirect: 'manual',
-                    signal: controller.signal
+                    redirect: 'manual', signal: controller.signal
                   });
-
-                  // 安全处理重定向
-                  if ([
-                    301, 302, 303, 307, 308
-                  ].includes(res.status)) {
-                    const location =
-                      res.headers.get('location');
-
-                    if (!location) {
-                      throw new Error(
-                        '重定向缺少 Location'
-                      );
-                    }
-
-                    next = new URL(
-                      location,
-                      next
-                    ).href;
-
+                  if ([301, 302, 303, 307, 308].includes(res.status)) {
+                    const location = res.headers.get('location');
+                    if (!location) throw new Error('重定向缺少 Location');
+                    next = new URL(location, next).href;
                     continue;
                   }
-
-                  if (!res.ok) {
-                    throw new Error(
-                      `HTTP ${res.status}`
-                    );
+                  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                  const type = res.headers.get('content-type') || '';
+                  if (type.toLowerCase().includes('text/html')) {
+                    throw new Error('返回了网页，而不是文件');
                   }
-
-                  const type =
-                    res.headers.get('content-type') || '';
-
-                  if (
-                    type.toLowerCase().includes('text/html')
-                  ) {
-                    throw new Error(
-                      '返回了网页，而不是文件'
-                    );
-                  }
-
-                  const declared = Number(
-                    res.headers.get('content-length') || 0
-                  );
-
-                  if (declared > MAX_FILE) {
-                    throw new Error(
-                      '文件超过 20MB'
-                    );
-                  }
-
+                  const declared = Number(res.headers.get('content-length') || 0);
+                  if (declared > MAX_FILE) throw new Error('文件超过 20MB');
                   const chunks = [];
                   let size = 0;
-
                   for await (const chunk of res.body) {
                     size += chunk.length;
-
-                    if (size > MAX_FILE) {
-                      throw new Error(
-                        '文件超过 20MB'
-                      );
-                    }
-
-                    chunks.push(
-                      Buffer.from(chunk)
-                    );
+                    if (size > MAX_FILE) throw new Error('文件超过 20MB');
+                    chunks.push(Buffer.from(chunk));
                   }
-
-                  if (!size) {
-                    throw new Error(
-                      '下载到空文件'
-                    );
-                  }
-
-                  return {
-                    bytes: Buffer.concat(chunks),
-                    type
-                  };
-
+                  if (!size) throw new Error('下载到空文件');
+                  return { bytes: Buffer.concat(chunks), type };
                 } finally {
                   clearTimeout(timer);
                 }
               }
-
-              throw new Error(
-                '附件重定向次数过多'
-              );
+              throw new Error('附件重定向次数过多');
             }
 
-            // 生成安全的文件名
-            function filenameOf(
-              attachment,
-              type,
-              index
-            ) {
+            function filenameOf(attachment, type, index) {
               let name = attachment.label.trim();
-
               try {
-                const part = new URL(
-                  attachment.url
-                ).pathname.split('/').pop();
-
+                const part = new URL(attachment.url).pathname.split('/').pop();
                 if (!/\.[A-Za-z0-9]{2,5}$/.test(name)) {
-                  name = decodeURIComponent(
-                    part || ''
-                  );
+                  name = decodeURIComponent(part || '');
                 }
-              } catch (_) {
-                // 保留原始标题
-              }
-
-              // 图片等匿名附件可能没有扩展名
+              } catch (_) { /* 使用原始标题 */ }
               if (!/\.[A-Za-z0-9]{2,5}$/.test(name)) {
-                const mime = type
-                  .split(';')[0]
-                  .toLowerCase();
-
+                const mime = type.split(';')[0].toLowerCase();
                 const ext = {
-                  'image/png': '.png',
-                  'image/jpeg': '.jpg',
-                  'image/webp': '.webp',
-                  'application/pdf': '.pdf',
+                  'image/png': '.png', 'image/jpeg': '.jpg',
+                  'image/webp': '.webp', 'application/pdf': '.pdf',
                   'text/plain': '.txt'
                 }[mime];
-
-                name = ext
-                  ? `附件-${index}${ext}`
-                  : '';
+                name = ext ? `附件-${index}${ext}` : '';
               }
-
-              if (
-                !name ||
-                name.length > 100 ||
-                /[\/\\<>:"|?*\x00-\x1F]/.test(name) ||
-                name === '.' ||
-                name === '..'
-              ) {
-                return null;
-              }
-
-              const ext = name
-                .toLowerCase()
-                .match(/\.[^.]+$/)?.[0];
-
-              return ALLOWED.has(ext)
-                ? name
-                : null;
+              if (!name || name.length > 100 || /[\/\\<>:"|?*\x00-\x1F]/.test(name)
+                  || name === '.' || name === '..') return null;
+              const ext = name.toLowerCase().match(/\.[^.]+$/)?.[0];
+              return ALLOWED.has(ext) ? name : null;
             }
 
             const imported = [];
-            const linked = [];
-            const failures = [];
+            const pending = []; // 仅用于 PR 的待处理信息，不写入课程 README
             const usedNames = new Set();
-
             let total = 0;
-
-            // 根据提交方式处理文件
-            if (
-              mode === '创建课程并上传资料'
-            ) {
-              for (
-                const [idx, file]
-                of attachments.entries()
-              ) {
-                // 超过 5 个文件则保留链接
+            if (mode === '创建课程并上传资料') {
+              for (const [idx, file] of attachments.entries()) {
                 if (idx >= 5) {
-                  linked.push(file);
+                  pending.push({ ...file, reason: '超过最多 5 个附件的自动导入限制' });
                   continue;
                 }
-
                 try {
-                  const data = await download(
-                    file.url
-                  );
-
-                  if (
-                    total + data.bytes.length >
-                    MAX_TOTAL
-                  ) {
-                    throw new Error(
-                      '本次附件总大小超过 50MB'
-                    );
+                  const data = await download(file.url);
+                  if (total + data.bytes.length > MAX_TOTAL) {
+                    throw new Error('本次附件总大小超过 50MB');
                   }
-
-                  let filename = filenameOf(
-                    file,
-                    data.type,
-                    idx + 1
-                  );
-
-                  if (!filename) {
-                    throw new Error(
-                      '附件类型或文件名不支持'
-                    );
-                  }
-
-                  // 处理重复文件名
+                  let filename = filenameOf(file, data.type, idx + 1);
+                  if (!filename) throw new Error('附件类型或文件名不支持');
                   if (usedNames.has(filename)) {
-                    filename =
-                      `${idx + 1}-${filename}`;
+                    filename = `${idx + 1}-${filename}`;
                   }
-
                   usedNames.add(filename);
                   total += data.bytes.length;
-
-                  imported.push({
-                    filename,
-                    bytes: data.bytes
-                  });
-
+                  imported.push({ filename, bytes: data.bytes });
                 } catch (error) {
-                  // 导入失败时保留附件链接
-                  linked.push(file);
-
-                  failures.push(
-                    `${file.label || `附件 ${idx + 1}`}：${error.message}`
-                  );
+                  pending.push({ ...file, reason: error.message });
                 }
               }
             }
 
-            // 创建 Bot 分支
-            const branch =
-              `add-course/issue-${issue.number}`;
-
-            const { data: main } =
-              await github.rest.repos.getBranch({
-                owner,
-                repo,
-                branch: 'main'
-              });
-
+            // 创建机器人分支
+            const branch = `add-course/issue-${issue.number}`;
+            const { data: main } = await github.rest.repos.getBranch({
+              owner, repo, branch: 'main'
+            });
             await github.rest.git.createRef({
-              owner,
-              repo,
-              ref: `refs/heads/${branch}`,
-              sha: main.commit.sha
+              owner, repo, ref: `refs/heads/${branch}`, sha: main.commit.sha
             });
 
-            // 生成课程 README
-            const safeLabel = s =>
-              s.replace(/[\[\]\\\r\n]/g, '')
-                .slice(0, 100);
-
+            const safeLabel = s => s.replace(/[\[\]\\\r\n]/g, '').slice(0, 100);
             const readme = [
               '<!-- COURSE_META_START',
               `分类：${category}`,
@@ -512,120 +236,69 @@ jobs:
               '## 课程资料',
               ''
             ];
-
             if (imported.length) {
               for (const f of imported) {
-                readme.push(
-                  `- [${safeLabel(f.filename)}](./资料/${encodeURIComponent(f.filename)})`
-                );
+                readme.push(`- [${safeLabel(f.filename)}](./资料/${encodeURIComponent(f.filename)})`);
               }
             } else {
-              readme.push(
-                '暂无仓库内资料，欢迎继续贡献。'
-              );
+              readme.push('暂无仓库内资料，欢迎继续贡献。');
             }
+            // README 只列出已成功导入的资料，不保留临时 Issue 附件链接。
+            // 未导入资料列在 PR 审核说明中，PR 将保持草稿状态。
+            readme.push('', '## 修读建议', '', '欢迎补充修读体验和注意事项。', '');
 
-            // 没有导入的文件保留原始链接
-            if (linked.length) {
-              readme.push(
-                '',
-                '### Issue 附件（尚未导入仓库）',
-                ''
-              );
-
-              for (
-                const [i, file]
-                of linked.entries()
-              ) {
-                readme.push(
-                  `- [${safeLabel(file.label) || `附件 ${i + 1}`}](${file.url})`
-                );
-              }
-            }
-
-            readme.push(
-              '',
-              '## 修读建议',
-              '',
-              '欢迎补充修读体验和注意事项。',
-              ''
-            );
-
-            // 向新分支写入文件
-            const write = async (
-              path,
-              bytes,
-              message
-            ) => {
-              await github.rest.repos
-                .createOrUpdateFileContents({
-                  owner,
-                  repo,
-                  branch,
-                  path,
-                  message,
-                  content: bytes.toString('base64')
-                });
-            };
-
-            // 写入 README
-            await write(
-              `${name}/README.md`,
-              Buffer.from(
-                readme.join('\n'),
-                'utf8'
-              ),
-              `docs: 新增课程 ${name} (#${issue.number})`
-            );
-
-            // 写入资料文件
-            for (const f of imported) {
-              await write(
-                `${name}/资料/${f.filename}`,
-                f.bytes,
-                `docs: 添加课程资料 ${f.filename}`
-              );
-            }
-
-            // 创建 Pull Request
-            const { data: pr } =
-              await github.rest.pulls.create({
-                owner,
-                repo,
-                head: branch,
-                base: 'main',
-                title: `新增课程：${name}`,
-                body: [
-                  `来自课程申请 #${issue.number}`,
-                  '',
-                  `- 分类：${category}`,
-                  `- 关键词：${keywords.join('、') || '无'}`,
-                  `- 已导入资料：${imported.length} 个`,
-                  `- 保留外部附件链接：${linked.length} 个`,
-                  '',
-                  '请维护者检查课程名称、版权及资料内容后再合并。',
-                  '',
-                  `Closes #${issue.number}`
-                ].join('\n')
+            const write = async (path, bytes, message) => {
+              await github.rest.repos.createOrUpdateFileContents({
+                owner, repo, branch, path, message,
+                content: bytes.toString('base64')
               });
+            };
+            await write(`${name}/README.md`, Buffer.from(readme.join('\n'), 'utf8'),
+              `docs: 新增课程 ${name} (#${issue.number})`);
+            for (const f of imported) {
+              await write(`${name}/资料/${f.filename}`, f.bytes,
+                `docs: 添加课程资料 ${f.filename}`);
+            }
 
-            // 在 Issue 下回复处理结果
+            const incomplete = pending.length > 0;
+            const reviewNotes = incomplete ? [
+              '',
+              '### 待处理附件（本 PR 是草稿）',
+              '',
+              ...pending.map((file, i) =>
+                `- [ ] ${safeLabel(file.label) || `附件 ${i + 1}`}：${file.reason}`
+              ),
+              '',
+              `请在申请 Issue #${issue.number} 查看原始附件，补齐资料后再将草稿 PR 标记为 Ready for review。`,
+              '未导入的附件不会写入课程 README。'
+            ] : [];
+
+            const { data: pr } = await github.rest.pulls.create({
+              owner, repo, head: branch, base: 'main',
+              draft: incomplete,
+              title: `新增课程：${name}`,
+              body: [
+                `来自课程申请 #${issue.number}`,
+                '',
+                `- 分类：${category}`,
+                `- 关键词：${keywords.join('、') || '无'}`,
+                `- 已成功导入：${imported.length} 个文件`,
+                `- 待人工处理：${pending.length} 个文件`,
+                ...reviewNotes,
+                '',
+                '请维护者检查课程名称、版权、附件内容及导入情况后再合并。',
+                '',
+                `Closes #${issue.number}`
+              ].join('\n')
+            });
+            const status = incomplete
+              ? '有附件未能自动导入，已创建草稿 PR，需维护者处理后再审核。'
+              : '资料已全部导入（或本申请仅创建目录），可以正常审核。';
             await comment([
               `课程 PR 已创建：${pr.html_url}`,
-              `\n已导入 ${imported.length} 个资料文件，${linked.length} 个文件仅保留 Issue 附件链接。`,
-              ...(
-                failures.length
-                  ? [
-                      '',
-                      '未自动导入原因：',
-                      ...failures.map(
-                        x => `- ${x}`
-                      )
-                    ]
-                  : []
-              )
+              '',
+              `成功导入 ${imported.length} 个资料文件；待处理 ${pending.length} 个。`,
+              status,
+              ...(incomplete ? [`详情请查看 PR 中的待处理清单。`] : [])
             ].join('\n'));
-
-            core.info(
-              `课程 PR：${pr.html_url}`
-            );
+            core.info(`课程 PR：${pr.html_url}`);
