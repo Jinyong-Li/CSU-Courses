@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   create-course:
-    if: startsWith(github.event.issue.title, '[课程资料]') || startsWith(github.event.issue.title, '[新增课程]')
+    if: startsWith(github.event.issue.title, '[新增课程]') || startsWith(github.event.issue.title, '[补充课程]') || startsWith(github.event.issue.title, '[课程资料]')
     runs-on: ubuntu-latest
 
     steps:
@@ -35,7 +35,12 @@ jobs:
               const key = block.slice(0, pos).trim();
               if (!(key in fields)) fields[key] = block.slice(pos + 1).trim();
             }
-            const name = (fields['课程名称'] || '').normalize('NFC').trim();
+            // 两张表单使用不同的课程字段；旧版表单仍然兼容。
+            const isSupplementForm = issue.title.startsWith('[补充课程]');
+            const name = (isSupplementForm
+              ? (fields['选择已有课程'] || '')
+              : (fields['课程名称'] || '')
+            ).normalize('NFC').trim();
             const category = (fields['课程分类（新增课程必填）'] || fields['课程分类'] || '').trim();
             let rawKeywords = (fields['关键词（新增课程选填）'] || fields['关键词（选填）'] || '').trim();
             if (/^_?No response_?$/i.test(rawKeywords)) rawKeywords = '';
@@ -138,12 +143,17 @@ jobs:
               if (err.status !== 404) throw err;
             }
 
+            if (isSupplementForm && !existingCourse) {
+              await comment(`没有找到课程「${name}」，请从最新课程列表重新选择，或使用新增课程表单。`);
+              return;
+            }
             if (!existingCourse && !categories.includes(category)) {
               await comment('新增课程时请选择课程分类，并重新提交表单。');
               return;
             }
             if (existingCourse && attachments.length === 0 && netdisk.length === 0 && !notes) {
-              await comment(`「${name}」已存在，补充文件、网盘资料或课程说明后即可提交。`);
+              const form = `https://github.com/${owner}/${repo}/issues/new?template=supplement-course.yml&existing_course=${encodeURIComponent(name)}`;
+              await comment(`课程「${name}」已存在。你可以[补充该课程资料](${form})。`);
               return;
             }
 
@@ -283,15 +293,6 @@ jobs:
               return;
             }
 
-            // 每个 Issue 使用独立分支
-            const branch = `course-submission/issue-${issue.number}`;
-            const { data: main } = await github.rest.repos.getBranch({
-              owner, repo, branch: 'main'
-            });
-            await github.rest.git.createRef({
-              owner, repo, ref: `refs/heads/${branch}`, sha: main.commit.sha
-            });
-
             const links = imported.map(f =>
               `- [${safeLabel(f.filename)}](./资料/${encodeURIComponent(f.filename)})`
             );
@@ -374,19 +375,28 @@ jobs:
               ].join('\n');
             }
 
-            // 课程页快捷补充入口：自动预填当前课程名称
+            // 新建课程自动加入补充表单入口，已有课程的旧链接也会升级
             function addCourseShortcut(text) {
-              if (text.includes('issues/new?template=add-course.yml&course_name=')) {
-                return text;
-              }
-              const url = `https://github.com/${owner}/${repo}/issues/new?template=add-course.yml&course_name=${encodeURIComponent(name)}`;
+              const url = `https://github.com/${owner}/${repo}/issues/new?template=supplement-course.yml&existing_course=${encodeURIComponent(name)}`;
               const link = `**[➕ 补充本课程资料（免 Fork）](${url})**`;
+              const old = /^\*\*\[➕ 补充本课程资料（免 Fork）\]\(https:\/\/github\.com\/Jinyong-Li\/CSU-Courses\/issues\/new\?template=(?:add-course|supplement-course)\.yml&(?:course_name|existing_course)=[^\n)]+\)\*\*$/gm;
+              if (old.test(text)) return text.replace(old, link);
+              if (text.includes('issues/new?template=supplement-course.yml&existing_course=')) return text;
               if (/^# [^\n]+/m.test(text)) {
                 return text.replace(/^# [^\n]+/m, heading => `${heading}\n\n${link}`);
               }
               return `${link}\n\n${text}`;
             }
             readme = addCourseShortcut(readme);
+
+            // 每个 Issue 使用独立分支
+            const branch = `course-submission/issue-${issue.number}`;
+            const { data: main } = await github.rest.repos.getBranch({
+              owner, repo, branch: 'main'
+            });
+            await github.rest.git.createRef({
+              owner, repo, ref: `refs/heads/${branch}`, sha: main.commit.sha
+            });
 
             // 将提交 Issue 的同学设为 Git 作者
             const contributor = issue.user;
@@ -434,7 +444,7 @@ jobs:
               draft: incomplete,
               title: `${existingCourse ? '补充课程资料' : '新增课程'}：${name}`,
               body: [
-                `来自课程资料申请 #${issue.number}`,
+                `来自课程申请 #${issue.number}`,
                 '',
                 `- 类型：${existingCourse ? '补充资料' : '新增课程'}`,
                 ...(!existingCourse ? [

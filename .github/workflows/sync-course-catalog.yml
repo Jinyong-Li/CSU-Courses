@@ -1,4 +1,4 @@
-name: 同步课程目录与表单快捷入口
+name: 同步课程目录与已有课程选择
 
 on:
   push:
@@ -19,16 +19,16 @@ jobs:
       - name: 获取仓库文件
         uses: actions/checkout@v4
 
-      - name: 更新课程导航和表单快捷链接
+      - name: 更新课程导航和已有课程下拉选项
         run: python3 scripts/sync_course_catalog.py
 
       - name: 提交变化
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md .github/ISSUE_TEMPLATE/add-course.yml
+          git add README.md .github/ISSUE_TEMPLATE/supplement-course.yml
           if ! git diff --cached --quiet; then
-            git commit -m "docs: 自动同步课程导航和表单快捷入口"
+            git commit -m "docs: 自动更新课程导航与选项"
             git push
           else
             echo "课程目录未变化，无需提交"
