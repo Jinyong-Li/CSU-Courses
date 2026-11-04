@@ -1,4 +1,3 @@
-
 <h1 align="center">中南大学课程共享计划</h1>
 
 <p align="center"><strong>CSU-Courses · 让课程资料更容易找到，也更容易被分享</strong></p>
@@ -42,53 +41,129 @@
 
 ## 参与贡献
 
-### ① 新增课程（推荐：无需 Fork）
+**新增课程、小文件上传很简单；较大的文件也可以在同一个 PR 中提交，无需等课程先审核合并。**
+
+### ① 新增课程（推荐，无需 Fork）
 
 **[➕ 点击填写「新增课程」表单](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml)**
 
-表单只需填写 **课程名称、分类、关键词（选填）**，再选择一种方式：
+填写课程名称、分类、关键词（选填），然后选择一种提交方式：
 
-| 提交方式 | 你需要做什么 | 自动处理结果 |
+| 提交方式 | 适用情况 | 自动处理结果 |
 | :--- | :--- | :--- |
-| **仅创建课程目录** | 填写课程信息并提交 | 生成课程文件夹及 README，并创建 PR |
-| **创建课程并上传资料** | 填写课程信息、选择附件并提交 | 尝试将资料导入课程文件夹，一起创建 PR |
+| **仅创建课程目录** | 暂时没有资料 | 自动生成课程文件夹和 README，并创建 PR |
+| **创建课程并上传资料** | 同时提交常规大小的资料 | 尝试将附件导入课程目录，一起创建 PR |
 
-维护者审核 PR 并合并后，课程才正式进入仓库。**同学无需等待审核后再重新提交资料。** 如果个别附件无法自动导入，机器人会在同一个 PR 中保留原始附件链接，供维护者处理。
+机器人创建的是 **待审核的 PR**，不会自动合并。你不需要等目录合并后再上传一次资料。
 
 <details>
-<summary><strong>上传附件的格式与注意事项</strong></summary>
+<summary><strong>查看 Issue 表单的附件规则</strong></summary>
 
-- 表单支持 PDF、DOCX、PPTX、XLSX、ZIP、PNG、JPG、WEBP、TXT。
-- 自动导入最多 **5 个文件**，单文件不超过 **20 MB**，合计不超过 **50 MB**。超过限制的附件只保留 GitHub Issue 链接，不自动放入仓库。
-- GitHub Issue 附件在公共仓库中可以被公开访问，请勿上传涉及个人隐私或未经授权的资料。
-- ZIP 只作为附件保存，不会自动解压。上传前请检查其中的内容。
+- 支持 PDF、DOCX、PPTX、XLSX、ZIP、PNG、JPG、WEBP、TXT。
+- 为保证自动导入稳定，建议单个文件不超过 **20 MiB**（图片不超过 **10 MB**），每次最多 **5 个**，总大小不超过 **50 MiB**；GitHub 表单本身还可能有更严格的格式限制。
+- 附件只作为待审核资料。**成功导入的文件**才写入课程 README；导入失败的附件**不会**写成永久链接。
+- 有附件导入失败时，机器人会创建**草稿 PR** 并列出问题，维护者处理完成后再进入正常审核。
+- ZIP 文件按原样保存，不自动解压。提交前请检查资料内容和版权。
 
 </details>
 
-### ② 为已有课程补充资料
+### ② 为已有课程补充资料（Fork + PR）
 
-如果课程目录已存在，继续通过 **Fork → 上传文件 → Pull Request** 的方式贡献。
+课程已存在时，直接 Fork 本仓库，创建分支、上传文件并提交 PR 即可。
 
 <details>
-<summary><strong>展开查看网页端提交 PR 的完整步骤</strong></summary>
+<summary><strong>展开查看 GitHub 网页端上传流程</strong></summary>
 
-1. 点击仓库右上角 **Fork**，将项目复制到自己的账号。
-2. 在自己的 Fork 中从 `main` 新建分支，例如 `add-math-notes`。
-3. 进入对应课程文件夹，点击 **Add file → Upload files** 上传资料。
-4. 点击 **Commit changes**，确保提交到刚创建的分支。
-5. 点击 **Contribute → Open pull request**，确保目标是 `Jinyong-Li/CSU-Courses` 的 `main` 分支。
+1. 点击仓库右上角 **Fork**，复制仓库到自己的账号。
+2. 在自己的 Fork 中从 `main` 新建分支，如 `add-math-notes`。
+3. 进入对应课程目录，点击 **Add file → Upload files**，上传资料。
+4. 点击 **Commit changes**，提交到刚才的新分支。
+5. 点击 **Contribute → Open pull request**，确保目标是 `Jinyong-Li/CSU-Courses` 的 `main`。
 6. 填写 PR 说明并提交，等待审核。
 
-**PR 仍然 Open 时**，可继续向同一分支上传文件，新提交会自动追加到该 PR；PR 合并后，新贡献建议另开分支。
+**同一个 PR 仍处于 Open 时**，可继续向同一个分支追加文件，无需重复创建 PR。合并后，建议从更新后的 `main` 新建分支。
+
+</details>
+
+### ③ 大文件怎么上传？
+
+| 单个文件大小 | 建议方式 | 说明 |
+| :--- | :--- | :--- |
+| **≤25 MiB** | 网页上传 / Issue 表单 | Issue 自动导入建议遵守上面的 20 MiB、5 个文件限制 |
+| **25–100 MiB** | **Fork + Git 命令行 + PR** | 普通 Git 文件超过 50 MiB 会收到警告，100 MiB 为硬限制 |
+| **>100 MiB** | **Git LFS** | 需提前确认公开 Fork 的 LFS 上传权限和仓库配额 |
+
+**新课程也可以直接走 Fork + PR：** 在同一个分支中新建 `课程名/README.md`、添加资料文件，一次 PR 即可提交完成，**不必先填「新增课程」Issue**。
+
+<details>
+<summary><strong>查看 25–100 MiB 文件上传命令</strong></summary>
+
+```bash
+# 在自己的 Fork 仓库本地目录中操作
+git checkout -b add-large-course-file
+# 将文件放入对应课程目录后
+git add .
+git commit -m "docs: 补充课程资料"
+git push origin add-large-course-file
+```
+
+然后到 GitHub 对原仓库发起 PR。请不要提交超过 100 MiB 的普通 Git 文件。
 
 </details>
 
 <details>
-<summary><strong>其他问题：资料过大、不方便使用 GitHub、修正错误</strong></summary>
+<summary><strong>查看 100 MiB 以上的 Git LFS 上传方式（进阶）</strong></summary>
 
-- 文件太大？可以在 Issue 或课程 README 中提供**合法来源**的外部链接与资料说明。
-- 不会使用 Fork/PR？可在 [Issues](https://github.com/Jinyong-Li/CSU-Courses/issues) 中说明情况，请维护者协助。
-- 发现错误、失效链接或重复资料？欢迎 [提交 Issue](https://github.com/Jinyong-Li/CSU-Courses/issues/new/choose)。
+**请先与维护者确认 LFS 是否可用。** GitHub 对公开 Fork 上传新的 LFS 对象有限制：只有仓库网络中已存在 LFS 对象，或贡献者对根仓库有写入权限时，才允许上传。LFS 存储和下载流量会计入原仓库所有者的额度，不能保证每位同学都能直接上传。
+
+在确认可用、并安装了 [Git LFS](https://git-lfs.com/) 后：
+
+```bash
+git lfs install
+# 建议只追踪具体大文件，避免把所有小文件都纳入 LFS
+git lfs track "课程名/资料/大型资料.zip"
+git add .gitattributes "课程名/资料/大型资料.zip"
+git commit -m "docs: 添加大文件资料"
+git push origin 你的贡献分支
+```
+
+LFS 文件在仓库目录中仍有对应路径，但 Git 历史里保存的是指针；请不要把它误认为普通 Git 文件。若 Fork 上传 LFS 失败，可通过 [Issue 联系维护者](https://github.com/Jinyong-Li/CSU-Courses/issues/new/choose)，无需在课程 README 中留下临时网盘或 Issue 附件链接。
+
+</details>
+
+<details>
+<summary><strong>新建课程文件夹时，README 怎么写？</strong></summary>
+
+在课程文件夹下创建 `README.md`，复制以下最简模板即可。**课程名称就是文件夹名称，关键词选填。**
+
+```markdown
+<!-- COURSE_META_START
+分类：专业基础课
+关键词：算法、数据结构
+COURSE_META_END -->
+
+# 课程名称
+
+> **课程分类**：专业基础课  
+> **关键词**：算法 · 数据结构
+
+## 课程简介
+
+## 课程资料
+
+## 修读建议
+```
+
+分类请在以下六类中选择：**公共基础课、专业基础课、专业核心课、通识选修课、实验实践课、其他**。
+
+</details>
+
+<details>
+<summary><strong>其他问题：不会用 Git、发现错误或资料侵权</strong></summary>
+
+- 不会使用 Fork 或 PR？可通过 [Issues](https://github.com/Jinyong-Li/CSU-Courses/issues) 提出建议并请求协助。
+- 发现重复资料、错误或失效链接？欢迎 [提交 Issue](https://github.com/Jinyong-Li/CSU-Courses/issues/new/choose)。
+- 请勿上传盗版教材、教师明确禁止公开的资料或个人隐私文件。
 
 </details>
 
