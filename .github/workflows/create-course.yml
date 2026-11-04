@@ -246,12 +246,28 @@ jobs:
             // 课程页面仅展示已导入的资料；未完成的文件交给 PR 处理。
             readme.push('', '## 修读建议', '', '欢迎补充修读体验和注意事项。', '');
 
+            
+            // 将提交 Issue 的同学设为 Git 作者
+            const contributor = issue.user;
+
+            const author = {
+              name: contributor.login,
+              email: `${contributor.id}+${contributor.login}@users.noreply.github.com`
+            };
+
+            // Bot 负责提交，但 Git 作者是贡献者本人
             const write = async (path, bytes, message) => {
               await github.rest.repos.createOrUpdateFileContents({
-                owner, repo, branch, path, message,
-                content: bytes.toString('base64')
+                owner,
+                repo,
+                branch,
+                path,
+                message,
+                content: bytes.toString('base64'),
+                author
               });
             };
+
             await write(`${name}/README.md`, Buffer.from(readme.join('\n'), 'utf8'),
               `docs: 新增课程 ${name} (#${issue.number})`);
             for (const f of imported) {
