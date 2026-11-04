@@ -15,6 +15,7 @@ body:
       description: 按课程名称选择
       options:
         # COURSE_OPTIONS_START
+
         - "习概"
         - "军事理论"
         - "大学物理"
@@ -31,6 +32,7 @@ body:
         - "金工实习"
         - "PPT模板"
         - "简历模板"
+
         # COURSE_OPTIONS_END
     validations:
       required: true
