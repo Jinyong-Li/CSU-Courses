@@ -1,154 +1,119 @@
-# 中南大学课程共享计划 😉
+<h1 align="center">中南大学课程共享计划</h1>
+
 <p align="center">
-  <a href="https://github.com/Jinyong-Li/CSU-Courses/stargazers">
-    <img src="https://img.shields.io/github/stars/Jinyong-Li/CSU-Courses?style=flat-square" alt="Stars" />
-  </a>
-  <a href="https://github.com/Jinyong-Li/CSU-Courses/network/members">
-    <img src="https://img.shields.io/github/forks/Jinyong-Li/CSU-Courses?style=flat-square" alt="Forks" />
-  </a>
-  <a href="https://github.com/Jinyong-Li/CSU-Courses/issues">
-    <img src="https://img.shields.io/github/issues/Jinyong-Li/CSU-Courses?style=flat-square" alt="Issues" />
-  </a>
-  <a href="https://github.com/Jinyong-Li/CSU-Courses/pulls">
-    <img src="https://img.shields.io/github/issues-pr/Jinyong-Li/CSU-Courses?style=flat-square" alt="Pull Requests" />
-  </a>
-  <a href="https://github.com/Jinyong-Li/CSU-Courses/commits/main">
-    <img src="https://img.shields.io/github/last-commit/Jinyong-Li/CSU-Courses?style=flat-square" alt="Last Commit" />
-  </a>
-  <a href="https://github.com/Jinyong-Li/CSU-Courses/graphs/contributors">
-    <img src="https://img.shields.io/github/contributors/Jinyong-Li/CSU-Courses?style=flat-square" alt="Contributors" />
-  </a>
-  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
-    <img src="https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey?style=flat-square" alt="License: CC BY-NC-SA 4.0" />
-  </a>
+  <strong>CSU-Courses · 让课程资料更容易找到，也更容易被分享</strong>
 </p>
-中南大学课程共享计划——CSU-Courses，欢迎大家贡献！
-正是大家的关注、维护和贡献，才使这个项目得以持续完善、不断更新，帮助更多同学更高效地学习与备考~
 
-## 帮助大家养成规律作息~
-[睡眠记录/早睡早起打卡](https://github.com/Jinyong-Li/sleep-checkin)
->[!note]
-> 每个人开一个Issue，两个基本指令为：
->
-> - 睡觉：`/sleep`
-> - 起床：`/wake`
+<p align="center">
+  收集课程资料、学习笔记、复习参考和修读经验，欢迎每一位同学参与共建。
+</p>
 
+<p align="center">
+  <a href="#课程导航"><strong>浏览课程</strong></a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml"><strong>新增课程</strong></a>
+  &nbsp;·&nbsp;
+  <a href="#参与贡献"><strong>补充资料</strong></a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/Jinyong-Li/CSU-Courses/issues"><strong>问题反馈</strong></a>
+</p>
 
-## 如何为本项目贡献
+<p align="center">
+  <a href="https://github.com/Jinyong-Li/CSU-Courses/stargazers"><img src="https://img.shields.io/github/stars/Jinyong-Li/CSU-Courses?style=flat-square" alt="Stars"></a>
+  <a href="https://github.com/Jinyong-Li/CSU-Courses/network/members"><img src="https://img.shields.io/github/forks/Jinyong-Li/CSU-Courses?style=flat-square" alt="Forks"></a>
+  <a href="https://github.com/Jinyong-Li/CSU-Courses/commits/main"><img src="https://img.shields.io/github/last-commit/Jinyong-Li/CSU-Courses?style=flat-square" alt="Last Commit"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey?style=flat-square" alt="License: CC BY-NC-SA 4.0"></a>
+</p>
 
-### 方法一：网页端提交 PR（推荐）
+> **第一次来到这里？** 直接点击下方课程名称寻找资料。如果没有你想找的课程，可以 [填写表单申请新增课程](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml)。
 
-> 适合：补充资料、上传 PDF/Word/图片等。  
-> **原则：一个 PR 对应一条分支**。只要该 PR 仍处于 **Open** 状态，后续所有新增/上传都请 **Commit 到该 PR 对应的分支**，这样会自动追加到同一个 PR。
+## 课程导航
 
+点击课程名称进入相应文件夹；资料内容以各课程目录为准。下面是方便查找的快速分组。
 
-#### 1. Fork 本项目
-点击右上角 **Fork**，将仓库 Fork 到你自己的账号下。
+<!-- COURSE_INDEX_START -->
 
-#### 2. 为本次贡献创建一个分支（推荐）
-进入你自己的 fork 仓库（例如 `yourname/CSU-Courses`）：
+| 方向 | 课程与资源 |
+| :--- | :--- |
+| **数学与公共基础** | [高等数学](./高等数学/) · [大学物理](./大学物理/) · [英语](./英语/) |
+| **计算机与工程基础** | [大计基](./大计基/) · [电工学](./电工学/) |
+| **思想政治与国防** | [习概](./习概/) · [毛概](./毛概/) · [马克思主义基本原理](./马克思主义基本原理/) · [军事理论](./军事理论/) |
+| **通识与心理健康** | [公选课](./公选课/) · [健康心理学](./健康心理学/) · [大学生心理健康教育](./大学生心理健康教育/) |
+| **工程实践** | [制造工程训练](./制造工程训练/) · [金工实习](./金工实习/) |
+| **实用模板** | [PPT 模板](./PPT模板/) · [简历模板](./简历模板/) |
 
-1. 点击分支下拉（通常显示 `main`）
-2. 输入一个新分支名（例如：`add-xxx-course-materials` 或 `patch-1`）
-3. 点击 **Create branch: `<branch>` from `main`**
+<!-- COURSE_INDEX_END -->
 
-> 说明：如果你不小心在后续步骤里点了 “Create a new branch …”，也无妨，
-> 把它当作你这次贡献的分支即可。关键是：**后续都提交到这一个分支**。
+> 找不到课程？也可以 [直接浏览仓库全部目录](https://github.com/Jinyong-Li/CSU-Courses/tree/main)。
 
-#### 3. 选择/创建课程目录（没有就新建，并添加 README）
-- 如果仓库里 **已经有对应课程目录**：直接进入目录，跳到第 4 步。
-- 如果 **没有对应课程目录**：建议新建目录并添加 `README.md`（资料简介/注意事项/课程体会等）。
+## 参与贡献
 
-**网页端创建目录的方法：**
-1. 确认你当前在**第 2 步创建的分支**（不是 `main`）
-2. 点击 **Add file → Create new file**
-3. 文件名输入：`课程名/README.md`  
-   （输入 `课程名/` 会自动形成目录；以 `README.md` 结尾）
-4. 填写 README 内容
-5. 提交选项选择：**Commit directly to the `<你的分支名>` branch**（重要）
-6. 点击 **Commit changes**
+无论是分享一份笔记、补充一张试卷，还是新增一门课程，都很欢迎。
 
-#### 4. 上传资料文件（追加到同一分支）
-1. 进入目标课程目录
-2. 点击 **Add file → Upload files**
-3. 选择文件或拖拽上传
-4. 提交选项选择：**Commit directly to the `<你的分支名>` branch**（重要）
-5. 点击 **Commit changes**
+### 新增课程：填写表单即可
 
-> 可以重复上传多次；只要 PR 仍是 Open，就一直提交到该 PR 对应分支即可。
+**[➕ 点击这里申请新增课程](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml)**
 
-#### 5. 创建 Pull Request（PR）
-1. 回到你 fork 仓库首页，通过以下任一入口发起 PR：
-   - 页面提示横幅里的 **Compare & pull request**
-   - **Contribute → Open pull request**
-   - **Pull requests → New pull request**
-2. 确认参数正确：
-   - **base repository（目标仓库）**：`Jinyong-Li/CSU-Courses`
-   - **base branch**：`main`
-   - **head repository**：你的 fork（例如 `yourname/CSU-Courses`）
-   - **compare**：你本次贡献的分支（例如 `add-xxx-course-materials`）
-3. 填写标题与说明，点击 **Create pull request**
+只需填写 **课程名称、课程分类、关键词（选填）**，提交后机器人会自动生成课程目录与 `README.md`，并创建 Pull Request（PR）。维护者审核合并后，课程目录就正式加入仓库。
 
-> [!IMPORTANT]
-> 如果 base repository 不是 `Jinyong-Li/CSU-Courses`：  
-> 点击页面上方小蓝字 **compare across forks**，手动选择：
-> - base repository = `Jinyong-Li/CSU-Courses`
-> - base branch = `main`
+**不需要自己 Fork 仓库，也不需要手动创建文件夹。** 如果课程目录已经存在，请直接按下面的方法补充资料。
 
-#### 6. PR 已经开了，但还想继续补充资料（追加到同一个 PR）
-前提：该 PR 仍处于 **Open** 状态。
+### 补充已有课程资料：通过 PR 提交
 
-1. 回到你自己的 fork 仓库
-2. 切换到该 PR 对应的分支（例如 `add-xxx-course-materials` / `patch-1`）
-3. 继续 **Add file → Create new file / Upload files**
-4. 提交时始终选择：**Commit directly to该分支**
-5. 回到 PR 页面刷新即可，新提交会自动出现在同一个 PR 里
+**Fork 仓库 → 创建分支 → 上传资料 → 提交 PR**。完整网页操作教程放在下面，按需展开即可。
 
-如果该 PR 已经 **Merged/Closed**：请从 fork 的 `main` 创建新分支，再按本文流程开一个新的 PR。
+<details>
+<summary><strong>查看网页端上传资料详细教程</strong></summary>
 
+1. 点击仓库右上角 **Fork**，复制项目到自己的账号。
+2. 打开自己的 Fork，从 `main` 创建一个新分支（如 `add-math-notes`）。
+3. 在该分支中找到对应课程文件夹，点击 **Add file → Upload files**，上传 PDF、Word、图片等资料。
+4. 点击 **Commit changes**，注意将修改提交到**刚才的新分支**。
+5. 点击 **Contribute → Open pull request**（或 **Compare & pull request**），确认目标为 `Jinyong-Li/CSU-Courses` 的 `main` 分支，然后创建 PR。
+6. 等待维护者审核。PR 仍处于 **Open** 时，可以继续向同一个分支提交新资料，它们会自动追加到同一个 PR。
 
-#### 7. （可选）PR 合并后删除分支
-当 PR 被 **Merged** 后，你可以删除用于本次贡献的分支，保持仓库整洁：
+**提示：** 一个 PR 对应一个贡献分支。PR 合并后，下次贡献建议从最新的 `main` 再创建新分支。
 
-- 在 PR 页面通常会出现 **Delete branch** 按钮，点击即可删除该分支
-- 或在你自己的 fork 仓库的 **Branches** 页面手动删除
+</details>
 
-> 如果后续还要继续贡献，建议从 fork 的 `main` 再新建一个分支，而不是复用旧分支。
+<details>
+<summary><strong>没有 Git 经验 / 无法上传大文件怎么办？</strong></summary>
 
+- 不会使用 Fork 和 PR？可以通过 [Issues](https://github.com/Jinyong-Li/CSU-Courses/issues/new/choose) 联系维护者并说明想贡献的内容。
+- GitHub 网页端单个文件通常限制为 **25 MB**，更大的文件可考虑 Git LFS，或在课程 README 中提供合法、可访问的外部链接。
+- 如果发现错误、失效链接或重复资料，也欢迎 [提交 Issue](https://github.com/Jinyong-Li/CSU-Courses/issues)。
 
-#### 上传限制（GitHub 常见限制）
-- 单个文件建议不超过 **25MB**（超过可能无法通过网页上传/或会被限制）
-- 一次可上传的文件数量也有限（文件太多建议分批提交）
-- 更大的文件建议使用 **Git LFS** 或提供 **网盘/Release 链接**，并在 `README.md` 中说明
+</details>
 
-### 方法二：写一个Issue，由项目维护人员进行添加。
+## 资料规范与版权说明
 
+请尽可能提供清晰的文件名和简短说明，并尊重原作者及授课教师的版权要求。以下内容请不要直接上传：
 
-## 注意事项
+- 盗版电子书、付费电子书或未经授权传播的教材。
+- 盗版、破解或未经授权分发的软件及安装包。
+- 教师明确不允许公开的课件、试题或其他资料。
 
-下列内容为不适合上传的内容。如果你认为缺少这些资料将会影响资源的完整性，建议你撰写一个 README 文档并放置一些链接或指引文字来帮助找到这些资源。
+如果某项资源不方便直接收录，可以在课程 README 中提供**合法来源的链接或获取指引**。
 
-- 盗版电子书/付费电子书
-- 盗版/破解版/绿色版付费软件及其安装包
-- 教师不允许上传的内容
-
-如果你认为本仓库的一些文件侵犯了您的权益，请联系我们 iljy@vip.qq.com 。我们将会从仓库中删除这些文件。
+> 本仓库资料仅供学习与交流参考，请自行判断资料的准确性、时效性及适用性。若您认为仓库内容侵犯了合法权益，请联系 **iljy@vip.qq.com**，我们会及时核查处理。
 
 ## 致谢
 
-感谢以下项目贡献者:
+感谢每一位分享、维护和改进课程资料的贡献者！
 
-[![Contributors](assets/contributors.svg)](https://github.com/Jinyong-Li/CSU-Courses/graphs/contributors)
+<a href="https://github.com/Jinyong-Li/CSU-Courses/graphs/contributors">
+  <img src="assets/contributors.svg" alt="Contributors" />
+</a>
 
-
-本项目参考了[浙江大学课程攻略共享计划](https://github.com/QSCTech/zju-icicles) ，[北京航空航天大学(北航)课程作业资料共享平台](https://github.com/TheBloodthirster/BUAA_Course_Sharing) ，在此表示感谢！
+本项目参考了 [浙江大学课程攻略共享计划](https://github.com/QSCTech/zju-icicles) 和 [北京航空航天大学课程作业资料共享平台](https://github.com/TheBloodthirster/BUAA_Course_Sharing)，在此表示感谢。
 
 ## 许可
 
-由贡献者编写部分的许可如下：
+贡献者原创部分采用 [CC BY-NC-SA 4.0：署名—非商业性使用—相同方式共享](LICENSE) 许可。其他资料的版权归各自权利人所有；本项目的许可不改变这些资料原有的版权归属。
 
-[CC-BY-NC-SA：署名-非商业性使用-相同方式共享](LICENSE)
+<details>
+<summary><strong>相关项目：睡眠记录 / 早睡早起打卡</strong></summary>
 
-> 资料仅供参考，请自己判断其适用性。
+也欢迎参与 [睡眠记录 / 早睡早起打卡](https://github.com/Jinyong-Li/sleep-checkin)：每个人创建一个 Issue，通过 `/sleep` 记录睡觉、`/wake` 记录起床。
 
-其他部分的版权归属于其各自的作者。
+</details>
