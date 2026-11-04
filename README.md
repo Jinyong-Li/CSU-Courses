@@ -1,3 +1,5 @@
+<!-- 注意，以后我审查PR的时候，表单 PR 选择 Rebase，Fork PR 选择 Squash -->
+
 <h1 align="center">中南大学课程共享计划</h1>
 
 <p align="center"><strong>CSU-Courses · 让课程资料更容易找到，也更容易被分享</strong></p>
@@ -163,3 +165,7 @@ COURSE_META_END -->
 欢迎参与 [睡眠记录 / 早睡早起打卡](https://github.com/Jinyong-Li/sleep-checkin)：使用 `/sleep` 记录睡觉，`/wake` 记录起床。
 
 </details>
+
+
+
+
