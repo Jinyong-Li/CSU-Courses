@@ -38,21 +38,11 @@ body:
     validations:
       required: false
 
-  - type: dropdown
-    id: submission_mode
-    attributes:
-      label: 提交方式
-      options:
-        - 仅创建课程目录
-        - 创建课程并上传资料
-    validations:
-      required: true
-
   - type: upload
     id: course_files
     attributes:
       label: 上传课程资料（选填）
-      description: 可以选择或拖入文件；没有资料就留空。
+      description: 有资料就上传，没有资料可以留空。
     validations:
       required: false
       accept: ".pdf,.docx,.pptx,.xlsx,.zip,.png,.jpg,.jpeg,.webp,.txt"
