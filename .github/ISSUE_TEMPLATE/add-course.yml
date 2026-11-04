@@ -1,20 +1,17 @@
 name: 新增课程
-description: 无需 Fork，即可申请新增课程并附带小型资料
+description: 新建课程，也可以同时上传资料
 title: "[新增课程] "
+
 body:
   - type: markdown
     attributes:
       value: |
-        感谢参与中南大学课程共享计划！
-        填写课程信息后，机器人会自动创建一个 PR，维护者审核后合并。
-        **可以只建目录，也可以在这次申请中同时上传小文件。**
-        超过 20 MiB 的资料可使用 Fork + PR；超过 100 MiB 建议上传网盘，并通过 PR 在课程 README 中补充分享链接（如有提取码请一并注明）。
+        欢迎分享课程资料！填写下面的信息，提交后会自动创建 PR，等待审核。
 
   - type: input
     id: course_name
     attributes:
       label: 课程名称
-      description: 请填写完整课程名，创建后将作为文件夹名称
       placeholder: 例如：高等数学
     validations:
       required: true
@@ -37,7 +34,6 @@ body:
     id: keywords
     attributes:
       label: 关键词（选填）
-      description: 多个关键词用逗号或顿号分隔
       placeholder: 例如：数学、微积分、期末复习
     validations:
       required: false
@@ -46,7 +42,6 @@ body:
     id: submission_mode
     attributes:
       label: 提交方式
-      description: 请选择是否要在本次申请中上传课程资料
       options:
         - 仅创建课程目录
         - 创建课程并上传资料
@@ -57,7 +52,7 @@ body:
     id: course_files
     attributes:
       label: 上传课程资料（选填）
-      description: 仅选择“创建课程并上传资料”时上传。建议单个≤20MiB（图片≤10MB）、最多5个、总计≤50MiB；导入失败会生成草稿 PR，不会在课程 README 中留下临时链接。请勿上传未授权资料。
+      description: 可以选择或拖入文件；没有资料就留空。
     validations:
       required: false
       accept: ".pdf,.docx,.pptx,.xlsx,.zip,.png,.jpg,.jpeg,.webp,.txt"
