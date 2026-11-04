@@ -1,0 +1,15 @@
+name: Create Course from Issue
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  create-course:
+    if: startsWith(github.event.issue.title, '[新增课程]')
+    runs-on
