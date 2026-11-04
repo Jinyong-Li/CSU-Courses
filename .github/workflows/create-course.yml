@@ -37,7 +37,6 @@ jobs:
             }
             const name = (fields['课程名称'] || '').normalize('NFC').trim();
             const category = (fields['课程分类'] || '').trim();
-            const mode = (fields['提交方式'] || '').trim();
             let rawKeywords = (fields['关键词（选填）'] || '').trim();
             if (/^_?No response_?$/i.test(rawKeywords)) rawKeywords = '';
             const keywords = rawKeywords
@@ -56,10 +55,6 @@ jobs:
             }
             if (!categories.includes(category)) {
               await comment('课程分类无效，请从表单给定的选项中选择。');
-              return;
-            }
-            if (!['仅创建课程目录', '创建课程并上传资料'].includes(mode)) {
-              await comment('提交方式无效，请从表单给定的选项中选择。');
               return;
             }
             if (keywords.length > 10 || keywords.some(k =>
@@ -88,10 +83,6 @@ jobs:
                 seen.add(url);
               }
             }
-            if (mode === '创建课程并上传资料' && attachments.length === 0) {
-              await comment('没有收到上传文件，请添加资料后重新提交。');
-              return;
-            }
 
             // 不重复创建 main 中已有的课程
             try {
@@ -105,7 +96,8 @@ jobs:
             }
 
             // 附件下载：限制 GitHub 域名、大小、数量；不解压、不执行
-            const MAX_FILE = 20 * 1024 * 1024;
+            const MAX_FILE = 25 * 1000 * 1000;   // 官方文档/压缩包/文本上限：25 MB
+            const MAX_IMAGE = 10 * 1000 * 1000; // 官方图片上限：10 MB
             const MAX_TOTAL = 50 * 1024 * 1024;
             const ALLOWED = new Set([
               '.pdf', '.docx', '.pptx', '.xlsx', '.zip',
@@ -139,12 +131,12 @@ jobs:
                     throw new Error('返回了网页，而不是文件');
                   }
                   const declared = Number(res.headers.get('content-length') || 0);
-                  if (declared > MAX_FILE) throw new Error('文件超过 20MB');
+                  if (declared > MAX_FILE) throw new Error('文件超过 25MB');
                   const chunks = [];
                   let size = 0;
                   for await (const chunk of res.body) {
                     size += chunk.length;
-                    if (size > MAX_FILE) throw new Error('文件超过 20MB');
+                    if (size > MAX_FILE) throw new Error('文件超过 25MB');
                     chunks.push(Buffer.from(chunk));
                   }
                   if (!size) throw new Error('下载到空文件');
@@ -183,7 +175,7 @@ jobs:
             const pending = []; // 仅用于 PR 的待处理信息，不写入课程 README
             const usedNames = new Set();
             let total = 0;
-            if (mode === '创建课程并上传资料') {
+            if (attachments.length > 0) {
               for (const [idx, file] of attachments.entries()) {
                 if (idx >= 5) {
                   pending.push({ ...file, reason: '超过最多 5 个附件的自动导入限制' });
@@ -196,6 +188,9 @@ jobs:
                   }
                   let filename = filenameOf(file, data.type, idx + 1);
                   if (!filename) throw new Error('附件类型或文件名不支持');
+                  if (/\.(png|jpe?g|webp)$/i.test(filename) && data.bytes.length > MAX_IMAGE) {
+                    throw new Error('图片超过 10MB');
+                  }
                   if (usedNames.has(filename)) {
                     filename = `${idx + 1}-${filename}`;
                   }
