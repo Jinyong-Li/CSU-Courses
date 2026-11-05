@@ -52,8 +52,7 @@
 
 ### ① 表单提交（推荐，无需 Fork）
 
-- **[➕ 新增课程](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=add-course.yml)**：填写课程名称、分类，可同时上传资料。
-- **[📚 补充已有课程](https://github.com/Jinyong-Li/CSU-Courses/issues/new?template=supplement-course.yml)**：从下拉列表选择课程，上传文件或分享网盘链接。
+- **[➕ 提交课程资料](https://github.com/Jinyong-Li/CSU-Courses/issues/new/choose)
 
 提交后机器人自动创建 PR，由维护者审核。**即使在新增表单中填写了已有课程，只要提供了新资料，也会自动按补充资料处理，不覆盖课程原有内容。**
 
