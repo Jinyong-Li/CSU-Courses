@@ -52,10 +52,9 @@ body:
     id: course_files
     attributes:
       label: 上传课程资料（选填）
-      description: PDF、Word、PPT、ZIP 等资料
+      description: 可选择多个文件，支持的格式与大小以 GitHub 上传提示为准
     validations:
       required: false
-      accept: ".pdf,.docx,.pptx,.xlsx,.zip,.png,.jpg,.jpeg,.webp,.txt"
 
   - type: textarea
     id: netdisk_links
