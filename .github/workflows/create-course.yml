@@ -58,16 +58,16 @@ jobs:
             function parseTargetFolder(raw) {
               const value = cleanOptional(raw).normalize('NFC');
               if (!value) return '';
-              if (value.length > 180 || value.includes('\\') || value.includes('//') ||
+              if (value.includes('\\') || value.includes('//') ||
                   value.startsWith('/') || value.endsWith('/')) {
                 throw new Error('资料存放位置格式不正确，例如：课件/第一章');
               }
               const segments = value.split('/').map(x => x.trim());
               // “资料/课件”与“课件”视为同一个位置，防止出现两层“资料”。
               if (segments[0] === '资料') segments.shift();
-              if (segments.length > 5 || segments.some(x =>
+              if (segments.some(x =>
                 !x || x === '.' || x === '..' || x.startsWith('.') || x.endsWith('.') ||
-                [...x].length > 50 || !/^[\p{L}\p{N} _（）()·.+#-]+$/u.test(x)
+                !/^[\p{L}\p{N} _（）()·.+#-]+$/u.test(x)
               )) {
                 throw new Error('请填写有效的文件夹名称，多个层级用 / 分隔，例如：课件/第一章');
               }
@@ -84,7 +84,7 @@ jobs:
             const displayPath = `资料${targetFolder ? `/${targetFolder}` : ''}`;
             const encodedPath = [...displayPath.split('/')].map(encodeURIComponent).join('/');
             const rawNetdisk = cleanOptional(fields['网盘资料（选填）']);
-            const safeLabel = s => s.replace(/[\[\]\\\r\n<>]/g, ' ').trim().slice(0, 100);
+            const safeLabel = s => s.replace(/[\[\]\\\r\n<>]/g, ' ').trim();
             const netdisk = [];
             const netdiskUrls = new Set();
             for (const line of rawNetdisk.split(/\r?\n/).map(s => s.trim()).filter(Boolean)) {
@@ -100,12 +100,11 @@ jobs:
                 await comment(`网盘资料「${safeLabel(parts[0])}」的链接无效。`);
                 return;
               }
-              if (url.protocol !== 'https:' || !url.hostname || url.username || url.password
-                  || parts[1].length > 1500 || parts[0].length > 100) {
+              if (url.protocol !== 'https:' || !url.hostname || url.username || url.password) {
                 await comment(`网盘资料「${safeLabel(parts[0])}」请填写有效的 HTTPS 分享链接。`);
                 return;
               }
-              if (parts[2] && (parts[2].length > 40 || /[\[\]\r\n<>]/.test(parts[2]))) {
+              if (parts[2] && (/[\[\]\r\n<>]/.test(parts[2]))) {
                 await comment(`网盘资料「${safeLabel(parts[0])}」的提取码格式不正确。`);
                 return;
               }
@@ -117,24 +116,19 @@ jobs:
                 passcode: parts[2] || ''
               });
             }
-            if (netdisk.length > 15 || notes.length > 2000) {
-              await comment('网盘资料最多 15 条，课程说明最多 2000 字。');
-              return;
-            }
             const categories = [
               '公共基础课', '专业基础课', '专业核心课',
               '通识选修课', '实验实践课', '其他'
             ];
             const validText = /^[\p{L}\p{N} _（）()·.+#-]+$/u;
 
-            if (!name || [...name].length > 60 || !validText.test(name)
+            if (!name || !validText.test(name)
                 || name.startsWith('.') || name.endsWith('.')) {
-              await comment('课程名称无效，请使用 1～60 个字符，不能包含斜杠或特殊路径字符。');
+              await comment('课程名称无效，请勿使用斜杠或其他路径特殊字符。');
               return;
             }
-            if (keywords.length > 10 || keywords.some(k =>
-                [...k].length > 30 || !validText.test(k))) {
-              await comment('关键词最多 10 个，每个最多 30 字，请用逗号分隔。');
+            if (keywords.some(k => !validText.test(k))) {
+              await comment('关键词含有不支持的特殊字符，请用逗号分隔。');
               return;
             }
 
@@ -142,7 +136,7 @@ jobs:
             const uploadField = fields['上传课程资料（选填）'] || '';
             const attachments = [];
             const seen = new Set();
-            const linkRE = /!?\[([^\]\r\n]{1,180})\]\((https:\/\/github\.com\/user-attachments\/(?:assets|files)\/[^\s)]+)\)/g;
+            const linkRE = /!?\[([^\]\r\n]+)\]\((https:\/\/github\.com\/user-attachments\/(?:assets|files)\/[^\s)]+)\)/g;
             for (const match of uploadField.matchAll(linkRE)) {
               const url = match[2];
               if (!seen.has(url)) {
@@ -188,14 +182,8 @@ jobs:
               return;
             }
 
-            // 附件下载：限制 GitHub 域名、大小、数量；不解压、不执行
-            const MAX_FILE = 25 * 1000 * 1000;   // 官方文档/压缩包/文本上限：25 MB
-            const MAX_IMAGE = 10 * 1000 * 1000; // 官方图片上限：10 MB
-            const MAX_TOTAL = 50 * 1024 * 1024;
-            const ALLOWED = new Set([
-              '.pdf', '.docx', '.pptx', '.xlsx', '.zip',
-              '.png', '.jpg', '.jpeg', '.webp', '.txt'
-            ]);
+            // 接收 GitHub Issue Forms 实际上传成功的附件；格式和大小由 GitHub 平台检查。
+            // 仅验证下载来源和安全路径，不额外设置文件个数、文件大小、累计大小限制。
             const isGithubHost = host =>
               host === 'github.com' || host.endsWith('.githubusercontent.com');
             async function download(url) {
@@ -205,76 +193,65 @@ jobs:
                 if (parsed.protocol !== 'https:' || !isGithubHost(parsed.hostname)) {
                   throw new Error('重定向到了非 GitHub 域名');
                 }
-                const controller = new AbortController();
-                const timer = setTimeout(() => controller.abort(), 30000);
-                let res;
-                try {
-                  res = await fetch(next, {
-                    redirect: 'manual', signal: controller.signal
-                  });
-                  if ([301, 302, 303, 307, 308].includes(res.status)) {
-                    const location = res.headers.get('location');
-                    if (!location) throw new Error('重定向缺少 Location');
-                    next = new URL(location, next).href;
-                    continue;
-                  }
-                  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                  const type = res.headers.get('content-type') || '';
-                  if (type.toLowerCase().includes('text/html')) {
-                    throw new Error('返回了网页，而不是文件');
-                  }
-                  const declared = Number(res.headers.get('content-length') || 0);
-                  if (declared > MAX_FILE) throw new Error('文件超过 25MB');
-                  const chunks = [];
-                  let size = 0;
-                  for await (const chunk of res.body) {
-                    size += chunk.length;
-                    if (size > MAX_FILE) throw new Error('文件超过 25MB');
-                    chunks.push(Buffer.from(chunk));
-                  }
-                  if (!size) throw new Error('下载到空文件');
-                  return { bytes: Buffer.concat(chunks), type };
-                } finally {
-                  clearTimeout(timer);
+                const res = await fetch(next, { redirect: 'manual' });
+                if ([301, 302, 303, 307, 308].includes(res.status)) {
+                  const location = res.headers.get('location');
+                  if (!location) throw new Error('重定向缺少 Location');
+                  next = new URL(location, next).href;
+                  continue;
                 }
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const type = res.headers.get('content-type') || '';
+                if (type.toLowerCase().includes('text/html')) {
+                  throw new Error('返回了网页，而不是文件');
+                }
+                const chunks = [];
+                let size = 0;
+                for await (const chunk of res.body) {
+                  size += chunk.length;
+                  chunks.push(Buffer.from(chunk));
+                }
+                if (!size) throw new Error('下载到空文件');
+                return { bytes: Buffer.concat(chunks), type };
               }
               throw new Error('附件重定向次数过多');
             }
 
             function filenameOf(attachment, type, index) {
+              // 首选 Issue 附件显示的原始文件名，不根据自定义扩展名白名单过滤。
               let name = attachment.label.trim();
-              try {
-                const part = new URL(attachment.url).pathname.split('/').pop();
-                if (!/\.[A-Za-z0-9]{2,5}$/.test(name)) {
+              if (!name) {
+                try {
+                  const part = new URL(attachment.url).pathname.split('/').pop();
                   name = decodeURIComponent(part || '');
-                }
-              } catch (_) { /* 使用原始标题 */ }
-              if (!/\.[A-Za-z0-9]{2,5}$/.test(name)) {
+                } catch (_) { /* 稍后使用通用文件名 */ }
+              }
+              if (!name) {
                 const mime = type.split(';')[0].toLowerCase();
                 const ext = {
                   'image/png': '.png', 'image/jpeg': '.jpg',
                   'image/webp': '.webp', 'application/pdf': '.pdf',
-                  'text/plain': '.txt'
-                }[mime];
-                name = ext ? `附件-${index}${ext}` : '';
+                  'text/plain': '.txt', 'video/mp4': '.mp4',
+                  'video/quicktime': '.mov', 'video/webm': '.webm'
+                }[mime] || '';
+                name = `附件-${index}${ext}`;
               }
-              if (!name || name.length > 100 || /[\/\\<>:"|?*\x00-\x1F]/.test(name)
+              // 仅检查是否能作为安全的 Git 文件名；不额外限制扩展名或长度。
+              if (!name || /[\/\\<>:"|?*\x00-\x1F]/.test(name)
                   || name === '.' || name === '..') return null;
-              const ext = name.toLowerCase().match(/\.[^.]+$/)?.[0];
-              return ALLOWED.has(ext) ? name : null;
+              return name;
             }
 
             const imported = [];
             const pending = [];
             const usedNames = new Set();
-            let total = 0;
 
             // 已有课程遇到同名文件时创建新文件，不覆盖原资料
             async function pickFilename(filename) {
               const dot = filename.lastIndexOf('.');
               const stem = filename.slice(0, dot);
               const ext = filename.slice(dot);
-              for (let n = 1; n <= 99; n++) {
+              for (let n = 1; ; n++) {
                 const candidate = n === 1 ? filename : `${stem}-${n}${ext}`;
                 if (usedNames.has(candidate)) continue;
                 if (existingCourse) {
@@ -290,27 +267,23 @@ jobs:
                 usedNames.add(candidate);
                 return candidate;
               }
-              throw new Error('同名文件过多');
             }
             if (attachments.length > 0) {
               for (const [idx, file] of attachments.entries()) {
-                if (idx >= 5) {
-                  pending.push({ ...file, reason: '超过最多 5 个附件的自动导入限制' });
-                  continue;
-                }
                 try {
                   const data = await download(file.url);
-                  if (total + data.bytes.length > MAX_TOTAL) {
-                    throw new Error('本次附件总大小超过 50MB');
-                  }
                   let filename = filenameOf(file, data.type, idx + 1);
-                  if (!filename) throw new Error('附件类型或文件名不支持');
-                  if (/\.(png|jpe?g|webp)$/i.test(filename) && data.bytes.length > MAX_IMAGE) {
-                    throw new Error('图片超过 10MB');
-                  }
+                  if (!filename) throw new Error('附件文件名不合法');
                   filename = await pickFilename(filename);
-                  total += data.bytes.length;
-                  imported.push({ filename, bytes: data.bytes });
+
+                  // 每个文件下载后立即写入 Git 对象，避免一次提交大量文件时长期占用内存。
+                  // GitHub API 若拒绝文件，会原样记录平台返回的报错，在 PR 中提示。
+                  const { data: blob } = await github.rest.git.createBlob({
+                    owner, repo,
+                    content: data.bytes.toString('base64'),
+                    encoding: 'base64'
+                  });
+                  imported.push({ filename, sha: blob.sha });
                 } catch (error) {
                   pending.push({ ...file, reason: error.message });
                 }
@@ -442,28 +415,21 @@ jobs:
               email: '41898282+github-actions[bot]@users.noreply.github.com'
             };
 
-            // 将 README 和所有资料合并进一个 Git Tree
-            const files = [
-              { path: `${name}/README.md`, bytes: Buffer.from(readme, 'utf8') },
+            // README + 已上传成功的附件写入同一个 Git Tree，仅生成 1 个 Commit。
+            const { data: readmeBlob } = await github.rest.git.createBlob({
+              owner, repo,
+              content: Buffer.from(readme, 'utf8').toString('base64'),
+              encoding: 'base64'
+            });
+            const entries = [
+              { path: `${name}/README.md`, mode: '100644', type: 'blob', sha: readmeBlob.sha },
               ...imported.map(f => ({
                 path: `${storagePath}/${f.filename}`,
-                bytes: f.bytes
-              }))
-            ];
-            const entries = [];
-            for (const file of files) {
-              const { data: blob } = await github.rest.git.createBlob({
-                owner, repo,
-                content: file.bytes.toString('base64'),
-                encoding: 'base64'
-              });
-              entries.push({
-                path: file.path,
                 mode: '100644',
                 type: 'blob',
-                sha: blob.sha
-              });
-            }
+                sha: f.sha
+              }))
+            ];
 
             const { data: tree } = await github.rest.git.createTree({
               owner, repo,
@@ -483,7 +449,7 @@ jobs:
               ref: `refs/heads/${branch}`,
               sha: commit.sha
             });
-            core.info(`本次申请共 ${files.length} 个文件，已合并为 1 个 Commit：${commit.sha}`);
+            core.info(`本次申请共 ${entries.length} 个文件，已合并为 1 个 Commit：${commit.sha}`);
 
             const incomplete = pending.length > 0;
             const reviewNotes = incomplete ? [
