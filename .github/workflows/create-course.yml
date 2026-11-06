@@ -52,6 +52,37 @@ jobs:
               return /^_?No response_?$/i.test(text) ? '' : text;
             };
             const notes = cleanOptional(fields['课程说明或修读建议（选填）']);
+
+            // 同一次表单上传的文件放进同一个子文件夹。
+            // 不填 => 课程名/资料/；填“课件/第一章” => 课程名/资料/课件/第一章/
+            function parseTargetFolder(raw) {
+              const value = cleanOptional(raw).normalize('NFC');
+              if (!value) return '';
+              if (value.length > 180 || value.includes('\\') || value.includes('//') ||
+                  value.startsWith('/') || value.endsWith('/')) {
+                throw new Error('资料存放位置格式不正确，例如：课件/第一章');
+              }
+              const segments = value.split('/').map(x => x.trim());
+              // “资料/课件”与“课件”视为同一个位置，防止出现两层“资料”。
+              if (segments[0] === '资料') segments.shift();
+              if (segments.length > 5 || segments.some(x =>
+                !x || x === '.' || x === '..' || x.startsWith('.') || x.endsWith('.') ||
+                [...x].length > 50 || !/^[\p{L}\p{N} _（）()·.+#-]+$/u.test(x)
+              )) {
+                throw new Error('请填写有效的文件夹名称，多个层级用 / 分隔，例如：课件/第一章');
+              }
+              return segments.join('/');
+            }
+            let targetFolder = '';
+            try {
+              targetFolder = parseTargetFolder(fields['资料存放位置（选填）']);
+            } catch (error) {
+              await comment(error.message);
+              return;
+            }
+            const storagePath = `${name}/资料${targetFolder ? `/${targetFolder}` : ''}`;
+            const displayPath = `资料${targetFolder ? `/${targetFolder}` : ''}`;
+            const encodedPath = [...displayPath.split('/')].map(encodeURIComponent).join('/');
             const rawNetdisk = cleanOptional(fields['网盘资料（选填）']);
             const safeLabel = s => s.replace(/[\[\]\\\r\n<>]/g, ' ').trim().slice(0, 100);
             const netdisk = [];
@@ -249,7 +280,7 @@ jobs:
                 if (existingCourse) {
                   try {
                     await github.rest.repos.getContent({
-                      owner, repo, path: `${name}/资料/${candidate}`, ref: 'main'
+                      owner, repo, path: `${storagePath}/${candidate}`, ref: 'main'
                     });
                     continue;
                   } catch (err) {
@@ -293,8 +324,9 @@ jobs:
               return;
             }
 
+            // README 中明确显示子文件夹路径，链接指向真实上传位置。
             const links = imported.map(f =>
-              `- [${safeLabel(f.filename)}](./资料/${encodeURIComponent(f.filename)})`
+              `- [${safeLabel(targetFolder ? `${targetFolder}/${f.filename}` : f.filename)}](./${encodedPath}/${encodeURIComponent(f.filename)})`
             );
             const cloudLinks = netdisk.map(f =>
               `- [${f.label}](${f.url})${f.passcode ? `（提取码：${safeLabel(f.passcode)}）` : ''}`
@@ -414,7 +446,7 @@ jobs:
             const files = [
               { path: `${name}/README.md`, bytes: Buffer.from(readme, 'utf8') },
               ...imported.map(f => ({
-                path: `${name}/资料/${f.filename}`,
+                path: `${storagePath}/${f.filename}`,
                 bytes: f.bytes
               }))
             ];
@@ -478,6 +510,7 @@ jobs:
                   `- 关键词：${keywords.join('、') || '无'}`
                 ] : []),
                 `- 已成功导入：${imported.length} 个文件`,
+                ...(imported.length ? [`- 文件位置：${displayPath}/`] : []),
                 `- 网盘资料：${netdisk.length} 条`,
                 `- 课程说明：${notes ? '有' : '无'}`,
                 `- 待人工处理：${pending.length} 个文件`,
