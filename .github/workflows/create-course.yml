@@ -468,6 +468,9 @@ jobs:
               draft: incomplete,
               title: `${existingCourse ? '补充课程资料' : '新增课程'}：${name}`,
               body: [
+                '### 合并方式：Rebase and merge',
+                '此 PR 由课程提交表单自动创建，请使用 Rebase 合并，以保留贡献者 Git Author 身份。',
+                '',
                 `来自课程申请 #${issue.number}`,
                 '',
                 `- 类型：${existingCourse ? '补充资料' : '新增课程'}`,
