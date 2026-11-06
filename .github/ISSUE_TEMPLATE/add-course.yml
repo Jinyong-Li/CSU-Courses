@@ -39,6 +39,15 @@ body:
     validations:
       required: false
 
+  - type: input
+    id: target_folder
+    attributes:
+      label: 资料存放位置（选填）
+      description: 例如：课件/第一章。不填写则保存到「资料」文件夹；不同文件夹可以分次提交。
+      placeholder: 课件/第一章
+    validations:
+      required: false
+
   - type: upload
     id: course_files
     attributes:

@@ -15,7 +15,6 @@ body:
       description: 按课程名称选择
       options:
         # COURSE_OPTIONS_START
-
         - "习概"
         - "军事理论"
         - "大学物理"
@@ -25,7 +24,6 @@ body:
         - "高等数学"
         - "大计基"
         - "电工学"
-        - "智能监测与诊断"
         - "健康心理学"
         - "公选课"
         - "大学生心理健康教育"
@@ -33,10 +31,18 @@ body:
         - "金工实习"
         - "PPT模板"
         - "简历模板"
-
         # COURSE_OPTIONS_END
     validations:
       required: true
+
+  - type: input
+    id: target_folder
+    attributes:
+      label: 资料存放位置（选填）
+      description: 例如：课件/第一章。不填写则保存到「资料」文件夹；不同文件夹可以分次提交。
+      placeholder: 课件/第一章
+    validations:
+      required: false
 
   - type: upload
     id: course_files
